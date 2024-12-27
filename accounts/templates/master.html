@@ -1,4 +1,4 @@
-<!-- FILEPATH: /Users/bartvz/moonshot/backend/accounts/templates/master.html -->
+<!-- FILEPATH: /Users/bartvz/moonshot/fyn-api/accounts/templates/master.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +7,7 @@
 <head>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <title> Moonshot Backend </title> 
+    <title> fyn-api </title> 
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     </script>
@@ -18,7 +18,7 @@
 
     {% block header %} 
     <div style="text-align: center; font-size: 5em; margin-bottom: 1cm;">
-        <a style="text-decoration: none; color: white;" href="{% url 'home' %}">Moonshot Backend</a>
+        <a style="text-decoration: none; color: white;" href="{% url 'home' %}">fyn-api</a>
     </div>
     {% endblock header %}
 

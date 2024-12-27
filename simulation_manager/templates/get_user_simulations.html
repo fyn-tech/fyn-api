@@ -1,0 +1,57 @@
+{% extends "master.html" %}
+
+{% block subheader %}
+    <h1>get_user_simulations</h1>
+{% endblock subheader %}
+
+
+{% block content %}
+
+    <div style="margin-bottom: 20px;">
+        <h2 style="text-align: center;">Simulations submitted by {{user.username}}</h2>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <form method="GET" action="">
+        <select name="attribute">
+            <option value="simulation_id">Simulation ID</option>
+            <option value="name">Name</option>
+            <option value="status">Status</option>
+            <!-- Add more options for other attributes -->
+        </select>
+        <input type="text" name="q" placeholder="Search simulations">
+        <input type="submit" value="Search">
+        <input type="submit" name="reset" value="Reset">
+        </form>
+    </div>
+    
+    <style>  
+        /* Add space around the content of each table cell */
+        table td, table th {
+        padding: 0 20px;
+        }
+    </style>
+    
+    <table>
+        <thead>
+        <tr>
+            <th><a href="?order=name">Name</a></th>
+            <th><a href="?order=status">Status</a></th>
+            <th><a href="?order=simulation_id">Simulation ID</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for simulation in user_simulations %}
+            <tr>
+            <td>{{ simulation.name }}</td>
+            <td>{{ simulation.simulation_status }}</td>
+            <td><a href="{% url 'get_simulation' simulation.id %}">{{ simulation.id }}</a></td>
+            </tr>
+        {% empty %}
+            <tr>
+            <td colspan="3">No simulations found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

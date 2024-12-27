@@ -1,0 +1,54 @@
+body {
+  background-color: Canvas;
+  color: CanvasText;
+  color-scheme: light dark;
+  font-family: Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  text-align: left;
+}
+
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  align-items: flex-start; 
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar {
+  border-right: 1px solid #ffffff;
+  height: 100vh;
+  overflow: auto;
+  padding-right: 30px; /* Add margin-right to create horizontal whitespace */
+}
+
+.sidebar ul {
+  list-style-type: none;
+}
+
+.sidebar ul li {
+  margin-bottom: 15px; /* Add margin-bottom to create whitespace between items */
+  font-size: 1.5em;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+}
+
+.content {
+  margin-left: 20px;
+  text-align: left;
+  overflow: auto; /* Add a scrollbar if the content exceeds the height */
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}

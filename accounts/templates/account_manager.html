@@ -1,0 +1,25 @@
+{% extends "master.html" %}
+
+{% block subheader %}
+    <h1>Account Manager</h1>
+{% endblock subheader %}
+
+
+{% block content %}
+
+
+
+    <h2>Backend Requests</h2>
+
+    <a href="{% url 'get_all_users' %}">All Users</a>
+
+    <h2>Function Chart</h2>
+
+    <pre class="mermaid">
+        graph TD;
+            A["Account Manager"]-->Users["get_all_users"];
+            Users-->User["get_user"];
+    </pre>
+
+
+{% endblock content %}

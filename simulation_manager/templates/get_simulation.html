@@ -1,0 +1,59 @@
+{% extends "master.html" %}
+
+
+{% block subheader %}
+    <h1>get_simulation</h1>
+{% endblock subheader %}
+
+
+{% block content %}
+
+    <div style="margin-bottom: 20px;">
+        <h2 style="text-align: center;"> '{{simulation.name}}' submitted by {{simulation.created_by.username}}</h2>
+    </div>
+
+
+    <table>
+        <tbody>
+            {% for field, value in simulation_dict.items %}
+            <tr>
+                <th>{{ field|title }}</th>
+                <td>                    
+                    {% if field == "created_by_id" %}
+                    <a href="{% url 'get_user' simulation.created_by.id %}">{{ value }}</a>
+                    {% else %}
+                        {{ value }}
+                    {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>YAML File Contents</h2>
+
+    <table>
+        <tbody>
+            {% for key, value in yaml_content.items %}
+            <tr>
+                <th>{{ key|title }}</th>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Actions</h2>
+
+    <form action="{% url 'delete_simulation' simulation.id %}" method="POST">
+        <input type="hidden" name="user_id" value="{{ simulation.id }}">
+        <button type="submit">Delete Simulation</button>
+      </form>
+
+    <h2>Notes</h2>
+
+    <ul>
+        <li>Above is the output of simulation_dict</li>
+        <li>Created_by is a user object, here simulation_dict only shows the primary key of the user, i.e. the UUID</li>
+    </ul>
+ 
+{% endblock content %}

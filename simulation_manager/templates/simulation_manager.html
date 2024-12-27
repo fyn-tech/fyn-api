@@ -1,0 +1,23 @@
+{% extends "master.html" %}
+
+{% block subheader %}
+    <h1>Simulation Manager</h1>
+{% endblock subheader %}
+
+
+{% block content %}
+  <h2>Backend Requests</h2>
+
+    <a href="{% url 'get_all_simulations' %}">get_all_simulations</a>
+
+  <h2>Function Chart</h2>
+
+    <pre class="mermaid">
+        graph TD;
+            A["Simulation Manager"] --- allsims["get_all_simulations"];
+            allsims-->singlesim["get_simulation"];
+            allsims-->usersims["get_user_simulations"]
+            usersims-->singlesim
+    </pre>
+
+{% endblock content %}

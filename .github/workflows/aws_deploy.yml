@@ -36,6 +36,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: "fyn-api"   
         environment_name: "fyn-api-env"   
-        region: "your-region"
+        region: "eu-north-1"
         version_label: "v-${{ github.sha }}"
         deployment_package: deploy.zip

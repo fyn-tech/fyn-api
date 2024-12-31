@@ -6,7 +6,7 @@ from django.core.files.storage import default_storage as storage
 import uuid
 import os
 
-# Create your models here.
+
 class Simulation(models.Model):
 
     # meta data

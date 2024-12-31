@@ -1,55 +1,12 @@
-<!-- FILEPATH: /Users/bartvz/moonshot/fyn-api/accounts/templates/master.html -->
-<!DOCTYPE html>
-<html lang="en">
+{% extends "admin/base_site.html" %}
+{% load static %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">fyn-api backend</a>
+</div>
+{% endblock %}
 
-
-<head>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <title> fyn-api </title> 
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    </script>
-</head>
-
-
-<body>
-
-    {% block header %} 
-    <div style="text-align: center; font-size: 5em; margin-bottom: 1cm;">
-        <a style="text-decoration: none; color: white;" href="{% url 'home' %}">fyn-api</a>
-    </div>
-    {% endblock header %}
-
-    <div class="flex-container">
-
-        {% block sidebar %}
-        <div class="sidebar">
-            <ul>
-                <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
-                <li><a href="{% url 'account_manager' %}">Account Management </a></li>
-                <li><a href="{% url 'simulation_manager' %}">Simulation Management</a></li>
-            </ul>
-        </div>
-        {% endblock sidebar %} 
-
-        <div class="content-container"> <!-- Add this wrapper div -->
-            <div class="content">
-            {% block subheader %}
-                <h1>Home</h1>
-            {% endblock subheader %}
-            </div>
-                
-            <div class="content">
-                {% block content %}
-                    <p>Landing page</p>
-                {% endblock content %}
-            </div>
-        </div> <!-- End of wrapper div -->
-        
-    </div> 
-
-</body>
-
-</html>
+{% block content %}
+    <p>Welcome to the fyn-api backend, please login and head over to the <a href="{% url 'admin:index' %}">Admin Panel</a></p>
+{% endblock content %}

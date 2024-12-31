@@ -20,8 +20,9 @@ from . import views
 
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
-    path('', include('accounts.urls')),
-    path('', include('simulation_manager.urls'))
+    path('accounts/', include('accounts.urls')),
+    path('simulation_manager/', include('simulation_manager.urls'))
 ]

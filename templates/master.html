@@ -27,7 +27,7 @@
         {% block sidebar %}
         <div class="sidebar">
             <ul>
-                <li><a href="{% url 'admin' %}">Admin Panel</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
                 <li><a href="{% url 'account_manager' %}">Account Management </a></li>
                 <li><a href="{% url 'simulation_manager' %}">Simulation Management</a></li>
             </ul>
@@ -43,7 +43,7 @@
                 
             <div class="content">
                 {% block content %}
-                    <p>test dksjlfj dklsfjklds fjdklsfj dlskjf dksl fjdkslfj dlsj sdkljdksljfsdklj</p>
+                    <p>Landing page</p>
                 {% endblock content %}
             </div>
         </div> <!-- End of wrapper div -->

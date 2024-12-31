@@ -92,11 +92,6 @@ def update_user(request, id):
 # Back End Requests
 # -------------------------------------------------------------------------------------------------
 
-def home(request):
-    template = loader.get_template('master.html')
-    context = {}
-    return HttpResponse(template.render(context, request))
-
 def admin(request):
     template = loader.get_template('admin.html')
     context = {}

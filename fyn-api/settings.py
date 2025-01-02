@@ -143,6 +143,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
+    'https://fyn-tech.com',
     'https://api.fyn-tech.com',
     'https://eb-django-app-dev.elasticbeanstalk.com',
     'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
@@ -153,8 +154,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
-    'https://api.fyn-tech.com',
-    'https://fyn-tech.com'
+    'https://fyn-tech.com',
+    'https://api.fyn-tech.com'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -162,7 +163,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
-    'https://api.fyn-tech.com',
+    'https://fyn-tech.com',
+    'https://api.fyn-tech.com'
     'https://eb-django-app-dev.elasticbeanstalk.com',
     'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
 ]
@@ -170,11 +172,12 @@ CSRF_TRUSTED_ORIGINS = [
 # because I am running everything on a signle machine, I can use the same domain for both
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = '.fyn-tech.com' 
 CSRF_COOKIE_PATH = '/'
 CSRF_USE_SESSIONS = True
+
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = '.fyn-tech.com' 
 SESSION_COOKIE_PATH = '/'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

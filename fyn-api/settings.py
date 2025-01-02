@@ -30,6 +30,7 @@ DEBUG = True
 #ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['eb-django-app-dev.elasticbeanstalk.com', 
                  'fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com',
+                 'api.fyn-tech.com',
                  '127.0.0.1']
 
 # Application definition
@@ -134,14 +135,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Stuff I added, and don't know where to put ;)
 AUTH_USER_MODEL = 'accounts.User'
-#CORS_ALLOW_ALL_ORIGINS = False  
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = False  
+#CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000', 
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
+    'https://api.fyn-tech.com',
     'https://eb-django-app-dev.elasticbeanstalk.com',
     'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
 ]
@@ -151,6 +153,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
+    'https://api.fyn-tech.com',
+    'https://fyn-tech.com'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -158,6 +162,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
+    'https://api.fyn-tech.com',
     'https://eb-django-app-dev.elasticbeanstalk.com',
     'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
 ]

@@ -46,6 +46,7 @@ def register_user(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+
 def sign_in(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -67,6 +68,7 @@ def sign_in(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid login'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
 
 def sign_out(request):
     if request.method == 'POST':

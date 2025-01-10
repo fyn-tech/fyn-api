@@ -178,7 +178,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000', 
     'http://127.0.0.1:8000',
     'https://fyn-tech.com',
-    'https://api.fyn-tech.com'
+    'https://api.fyn-tech.com',
     'https://eb-django-app-dev.elasticbeanstalk.com',
     'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
 ]

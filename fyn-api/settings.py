@@ -29,11 +29,13 @@ SECRET_KEY = 'django-insecure---^l64^l#xtd70m(*aw0(ii(72=)3lp4dag%)cyoor*)oflf^*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['eb-django-app-dev.elasticbeanstalk.com', 
                  'fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com',
                  'api.fyn-tech.com',
                  '127.0.0.1']
+
+if os.getenv('EC2_IP'):
+    ALLOWED_HOSTS.append(os.getenv('EC2_IP'))
 
 # Application definition
 

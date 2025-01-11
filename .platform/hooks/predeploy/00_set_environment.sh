@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Debug: Print current environment variables
+echo "Current environment variables:" > /tmp/env_debug.log
+env >> /tmp/env_debug.log
+
+# Debug: Check if env file exists and print its contents
+echo "Contents of /opt/elasticbeanstalk/deployment/env:" >> /tmp/env_debug.log
+cat /opt/elasticbeanstalk/deployment/env >> /tmp/env_debug.log
+
 # Create or modify the systemd service configuration
 cat > /etc/systemd/system/web.service << 'EOL'
 [Unit]
@@ -21,5 +29,12 @@ WorkingDirectory=/var/app/current/
 WantedBy=multi-user.target
 EOL
 
+# Debug: Verify service file was created
+echo "Contents of web.service:" >> /tmp/env_debug.log
+cat /etc/systemd/system/web.service >> /tmp/env_debug.log
+
 # Reload systemd
 systemctl daemon-reload
+
+# Debug: Check systemd status
+systemctl status web >> /tmp/env_debug.log 2>&1

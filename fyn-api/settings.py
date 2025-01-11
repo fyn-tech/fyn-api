@@ -13,7 +13,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 import sys
+from dotenv import dotenv_values, load_dotenv
 
+if os.path.exists('/opt/elasticbeanstalk/deployment/env'):
+    env_file = '/opt/elasticbeanstalk/deployment/env'
+else:
+    env_file = '.env'
+env_vars = dotenv_values(env_file)
+load_dotenv(env_file)
+
+print(f"Env Vars: {env_vars}")
 print("Current ENVIRONMENT value:", os.getenv('ENVIRONMENT'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

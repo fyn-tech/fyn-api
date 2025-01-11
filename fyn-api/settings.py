@@ -12,21 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import subprocess
 import sys
-import ast
 
 print("Current ENVIRONMENT value:", os.getenv('ENVIRONMENT'))
-
-def get_environ_vars():
-    completed_process = subprocess.run(
-        ['/opt/elasticbeanstalk/bin/get-config', 'environment'],
-        stdout=subprocess.PIPE,
-        text=True,
-        check=True
-    )
-
-    return ast.literal_eval(completed_process.stdout)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,48 +85,24 @@ WSGI_APPLICATION = 'fyn-api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
-def get_environ_vars():
-    completed_process = subprocess.run(
-            ['/opt/elasticbeanstalk/bin/get-config', 'environment'],
-            stdout=subprocess.PIPE,
-            text=True,
-            check=True
-        )
-    return ast.literal_eval(completed_process.stdout)
-
-if 'ENVIRONMENT' in os.environ:
-    if os.getenv('ENVIRONMENT') == 'production':
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.getenv('RDS_DB_NAME'),
-                'USER': os.getenv('RDS_USERNAME'),
-                'PASSWORD': os.getenv('RDS_PASSWORD'),
-                'HOST': os.getenv('RDS_HOSTNAME'),
-                'PORT': os.getenv('RDS_PORT'),
-            }
-        }
-    else:  # Local development database
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
-else:
-    env_vars = get_environ_vars()
+if os.getenv('ENVIRONMENT') == 'production':
     DATABASES = {
-         'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': env_vars['RDS_DB_NAME'],
-         'USER': env_vars['RDS_USERNAME'],
-         'PASSWORD': env_vars['RDS_PASSWORD'],
-         'HOST': env_vars['RDS_HOSTNAME'],
-         'PORT': env_vars['RDS_PORT'],
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('RDS_DB_NAME'),
+            'USER': os.getenv('RDS_USERNAME'),
+            'PASSWORD': os.getenv('RDS_PASSWORD'),
+            'HOST': os.getenv('RDS_HOSTNAME'),
+            'PORT': os.getenv('RDS_PORT'),
         }
-    }    
-
+    }
+else:  # Local development database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
     
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

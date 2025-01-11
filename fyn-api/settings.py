@@ -15,8 +15,8 @@ import os
 import sys
 from dotenv import dotenv_values, load_dotenv
 
-if os.path.exists('/opt/elasticbeanstalk/deployment/env'):
-    env_file = '/opt/elasticbeanstalk/deployment/env'
+if os.path.exists('/var/app/current/env_vars'):
+    env_file = '/var/app/current/env_vars'
 else:
     env_file = '.env'
 env_vars = dotenv_values(env_file)

@@ -28,7 +28,20 @@ jobs:
     - name: Generate deployment package
       run: |
         zip -r deploy.zip . -x "*.git*"
-        
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-north-1
+
+    - name: Set RDS Password in EB Environment
+      run: |
+        aws elasticbeanstalk update-environment \
+          --environment-name "fyn-api-env" \
+          --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=RDS_PASSWORD,Value=${{ secrets.RDS_PASSWORD }}
+
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
@@ -40,7 +53,4 @@ jobs:
         version_label: "v-${{ github.sha }}"
         deployment_package: deploy.zip
         use_existing_version_if_available: true
-        environment_variables: |
-          ENVIRONMENT=production,
-          RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}
-          
+

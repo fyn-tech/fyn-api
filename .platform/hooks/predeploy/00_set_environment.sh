@@ -21,6 +21,5 @@ WorkingDirectory=/var/app/current/
 WantedBy=multi-user.target
 EOL
 
-# Reload systemd and restart the web service
+# Reload systemd
 systemctl daemon-reload
-EOL

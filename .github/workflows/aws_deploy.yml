@@ -40,3 +40,4 @@ jobs:
         version_label: "v-${{ github.sha }}"
         deployment_package: deploy.zip
         use_existing_version_if_available: true
+        environment_variables: RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}

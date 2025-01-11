@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import sys
 
+print("Current ENVIRONMENT value:", os.getenv('ENVIRONMENT'))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / 'apps'))

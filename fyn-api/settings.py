@@ -91,7 +91,7 @@ if os.getenv('ENVIRONMENT') == 'production':
             'USER': os.getenv('RDS_USERNAME'),
             'PASSWORD': os.getenv('RDS_PASSWORD'),
             'HOST': os.getenv('RDS_HOSTNAME'),
-            'PORT': os.getenv('RDS_PORT', '5432'),
+            'PORT': os.getenv('RDS_PORT'),
         }
     }
 else:  # Local development database

@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.0.7">
+  <diagram name="Page-1" id="OiLh1fH9trJi4Xa0TGHf">
+    <mxGraphModel dx="2008" dy="1114" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-13" value="RunnerInfo (DBR)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="120" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-14" value="+ RunnerID: UUID //RDkey&lt;div&gt;+ RunnerToken: String&lt;/div&gt;&lt;div&gt;+ HardwareData:HardwareInfo&lt;/div&gt;&lt;div&gt;+ Active Jobs: [&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;UUID] //RDkey&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ Owner/UserID: UUID&lt;/div&gt;&lt;div&gt;+ State: Enum (Offline, Active, Busy?)&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-13">
+          <mxGeometry y="26" width="240" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-17" value="JobInfo (DBR)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="390" width="240" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-18" value="+ SimulationID: UUID //RDkey&lt;div&gt;+ OwenrID: UUID //RDkey&lt;/div&gt;&lt;div&gt;+ RunnerID: UUID //RDkey&lt;/div&gt;&lt;div&gt;+ JobConfigID: UUID //RDkey&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-17">
+          <mxGeometry y="26" width="240" height="194" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-38" value="User/Accounts" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" width="160" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-39" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-38">
+          <mxGeometry y="26" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-40" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-38">
+          <mxGeometry y="52" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-41" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-38">
+          <mxGeometry y="60" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-42" value="Company Accounts" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="334" width="160" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-43" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-42">
+          <mxGeometry y="26" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-44" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-42">
+          <mxGeometry y="52" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-45" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-42">
+          <mxGeometry y="60" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-50" value="HardwareInfo&amp;nbsp;&lt;span style=&quot;font-weight: 700;&quot;&gt;(DBR)&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="120" width="140" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-51" value="+ CPU: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-50">
+          <mxGeometry y="26" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-52" value="+ GPU: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-50">
+          <mxGeometry y="52" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-53" value="+ Memory: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-50">
+          <mxGeometry y="78" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-56" value="Job Manager" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="510" width="230" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-57" value="+ Jobs:[JobInfo]&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-56">
+          <mxGeometry y="26" width="230" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-58" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-56">
+          <mxGeometry y="60" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-59" value="+ start_new_sim(type):&amp;nbsp;&lt;div&gt;- request_hardware_resource(): bool&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;// running simulation&lt;/div&gt;&lt;div&gt;+ update_simulation_progress()&lt;/div&gt;&lt;div&gt;+ get_job_progress()&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+ update_job_config()&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ terminate_process()&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-56">
+          <mxGeometry y="68" width="230" height="242" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-60" value="HardwareManager" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="110" width="200" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-61" value="&lt;div&gt;&lt;div&gt;+ Runners: [RunnerInfo]&amp;nbsp;&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-60">
+          <mxGeometry y="26" width="200" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-62" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-60">
+          <mxGeometry y="50" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-63" value="&lt;div&gt;// runner creation&lt;/div&gt;&lt;div&gt;+ add_new_runner()&lt;/div&gt;+ authentical_runner()&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;// hardware related&lt;br&gt;&lt;div&gt;+ update_hardware_info()&lt;/div&gt;&lt;div&gt;+ get_hardware_info()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;// job related&lt;/div&gt;&lt;div&gt;+ request_new_job(): bool&lt;/div&gt;&lt;div&gt;+ get_jobs()&lt;/div&gt;&lt;div&gt;+ start_job()&lt;/div&gt;&lt;div&gt;+ terminate_job()&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;// status related&lt;/div&gt;&lt;div&gt;+ runner_heartbeat()&lt;/div&gt;&lt;div&gt;+ get_runner_state()&amp;nbsp;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-60">
+          <mxGeometry y="58" width="200" height="312" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-64" value="JobConfig&amp;nbsp;&lt;span style=&quot;font-weight: 700;&quot;&gt;(DBR)&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="536" y="390" width="140" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-65" value="+ yamlfile of settings?&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-64">
+          <mxGeometry y="26" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-68" value="JobRequest" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="860" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-69" value="+ Required_cpu:&lt;div&gt;+ required_memory:&lt;/div&gt;&lt;div&gt;+ required_hard_memory:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-68">
+          <mxGeometry y="26" width="240" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-70" value="JobReponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="950" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-71" value="+ Status: book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-70">
+          <mxGeometry y="26" width="240" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-72" value="JobUpdateRequest" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="860" width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-73" value="+ task_enum: (kill/modifiy/etc)&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-72">
+          <mxGeometry y="26" width="240" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-74" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;JobUpdate&lt;/span&gt;Reponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-72">
+          <mxGeometry y="90" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-75" value="+ Status: book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-74">
+          <mxGeometry y="26" width="240" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-77" value="JobPrgressRequest" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="860" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-78" value="+ JobInfo: string&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-77">
+          <mxGeometry y="26" width="240" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-79" value="JobProgressReponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="950" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="-diZnIrNLLxqrGsPqr5u-80" value="+ lots of data back" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-diZnIrNLLxqrGsPqr5u-79">
+          <mxGeometry y="26" width="240" height="74" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

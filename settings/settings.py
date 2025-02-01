@@ -10,44 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from dotenv import dotenv_values, load_dotenv
 from pathlib import Path
 import os
 import sys
-from dotenv import dotenv_values, load_dotenv
 
 if os.path.exists('/var/app/current/env_vars'):
     env_file = '/var/app/current/env_vars'
 else:
     env_file = '.env'
-env_vars = dotenv_values(env_file)
 load_dotenv(env_file)
 
+# early project debugging output
+env_vars = dotenv_values(env_file)
 print(f"Env Vars: {env_vars}")
 print("Current ENVIRONMENT value:", os.getenv('ENVIRONMENT'))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / 'apps'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure---^l64^l#xtd70m(*aw0(ii(72=)3lp4dag%)cyoor*)oflf^*'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['eb-django-app-dev.elasticbeanstalk.com', 
-                 'fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com',
-                 'api.fyn-tech.com',
-                 '127.0.0.1']
-
-if os.getenv('EC2_IP'):
-    ALLOWED_HOSTS.append(os.getenv('EC2_IP'))
+# Core settings
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -60,16 +47,15 @@ INSTALLED_APPS = [
     'apps.simulation_manager',
 ]
 
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'fyn-api.urls'
@@ -92,10 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fyn-api.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 if os.getenv('ENVIRONMENT') == 'production':
     DATABASES = {
         'default': {
@@ -114,10 +97,8 @@ else:  # Local development database
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -135,73 +116,41 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-gb'
-
 TIME_ZONE = 'Europe/Berlin'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Stuff I added, and don't know where to put ;)
+# Custom user model
 AUTH_USER_MODEL = 'accounts.User'
-CORS_ALLOW_ALL_ORIGINS = False  
-#CORS_ORIGIN_ALLOW_ALL = True
+
+# Security settings
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+if os.getenv('EC2_IP'):
+    ALLOWED_HOSTS.append(os.getenv('EC2_IP'))
+
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000', 
-    'http://127.0.0.1:3000',
-    'http://localhost:8000', 
-    'http://127.0.0.1:8000',
-    'https://fyn-tech.com',
-    'https://api.fyn-tech.com',
-    'https://eb-django-app-dev.elasticbeanstalk.com',
-    'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
-]
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',  
-    'http://127.0.0.1:3000',
-    'http://localhost:8000', 
-    'http://127.0.0.1:8000',
-    'https://fyn-tech.com',
-    'https://api.fyn-tech.com'
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',  
-    'http://127.0.0.1:3000',
-    'http://localhost:8000', 
-    'http://127.0.0.1:8000',
-    'https://fyn-tech.com',
-    'https://api.fyn-tech.com',
-    'https://eb-django-app-dev.elasticbeanstalk.com',
-    'https://fyn-api-env.eba-ha2ssgnp.eu-north-1.elasticbeanstalk.com'
-]
-
-# because I am running everything on a signle machine, I can use the same domain for both
+# Cookie settings
 CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = '.fyn-tech.com' 
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_DOMAIN = None if DEBUG else '.fyn-tech.com'
 CSRF_COOKIE_PATH = '/'
 CSRF_USE_SESSIONS = False
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
 
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_DOMAIN = '.fyn-tech.com' 
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_DOMAIN = None if DEBUG else '.fyn-tech.com'
 SESSION_COOKIE_PATH = '/'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

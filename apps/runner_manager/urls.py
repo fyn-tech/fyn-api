@@ -8,7 +8,7 @@ urlpatterns = [
     path('get_hardware/', views.get_hardware), # get hardware info
     path('request_new_job/', views.request_new_job), # new request new job
     path('get_jobs/', views.get_jobs), # get jobs
-    path('get_status/', views.get_status()), # get runner state
+    path('get_status/', views.get_status), # get runner state
 
     # runner api
     path('register/', views.register), # authenticate runner
@@ -17,7 +17,7 @@ urlpatterns = [
     
     # general (i.e. both front and runner) api
     path('start_job/', views.start_job), # start job
-    path('terminate_job', views.terminate_job), # terminate job
+    path('terminate_job/', views.terminate_job), # terminate job
     
     # other app apis
     path('', include('accounts.urls')),

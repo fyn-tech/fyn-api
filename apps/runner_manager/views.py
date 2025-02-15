@@ -4,7 +4,7 @@ from django.template import loader
 from .models import RunnerInfo, Status
 from accounts.models import User
 from django.forms import model_to_dict
-from django.core.security import secrets
+import secrets
 
 @login_required
 def runners(request):

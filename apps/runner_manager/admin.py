@@ -3,5 +3,5 @@ from .models import RunnerInfo
 
 @admin.register(RunnerInfo)
 class RunnerAdmin(admin.ModelAdmin):
-    print("WIP: empty")
-    pass
+    print("WIP: empty - Runner admin")
+    

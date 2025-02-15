@@ -1,10 +1,10 @@
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from .models import RunnerInfo
+from .models import RunnerInfo, Status
 from accounts.models import User
 from django.forms import model_to_dict
-import yaml
+from django.core.security import secrets
 
 @login_required
 def runners(request):
@@ -29,7 +29,29 @@ def runners(request):
 
 @login_required
 def add_new_runner(request):
-    raise NotImplemented("WIP")
+    """
+    
+    """
+    
+    if request.method == 'POST':
+        
+        # Generate a secure token
+        token = secrets.token_urlsafe(32)
+        
+        # Create new runner
+        runner = RunnerInfo.objects.create(
+            owner=request.user,
+            token=token,
+            state=Status.OFFLINE.value
+        )
+        
+        return JsonResponse({
+            'id': str(runner.id),
+            'token': runner.token
+        }, status=201)  
+    
+    return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+
 
 
 @login_required

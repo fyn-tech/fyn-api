@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'apps.accounts',
-    'apps.runner_manager'
+    'apps.runner_manager',
     'apps.simulation_manager',
 ]
 

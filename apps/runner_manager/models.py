@@ -22,7 +22,7 @@ class RunnerInfo(models.Model):
     # meta data
     id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     token        = models.CharField(max_length=100, blank=False, null=False, default="")
-    active_jobs  = models.UUIDField(auto_now_add=True)
+    active_jobs  = models.JSONField(default=list)
     state        = models.CharField(max_length=20,choices=STATUS_CHOICES,default=Status.OFFLINE.value)
     owner        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='runner')
 

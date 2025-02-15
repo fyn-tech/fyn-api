@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     
     # front end api
-    path('add_new_runner/', views.add_new_runner), # add new runner.
+    path('add_new_runner/', views.add_new_runner, name='add_new_runner'), # add new runner.
     path('get_hardware/', views.get_hardware), # get hardware info
     path('request_new_job/', views.request_new_job), # new request new job
     path('get_jobs/', views.get_jobs), # get jobs

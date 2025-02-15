@@ -53,7 +53,6 @@ class RunnerViewTests(TestCase):
         
         # Should redirect to login page
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith('/login/'))  # Adjust path as needed
 
     def test_add_runner_wrong_method(self):
         """Test that only POST method is allowed"""

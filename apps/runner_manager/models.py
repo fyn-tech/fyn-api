@@ -38,8 +38,14 @@ class RunnerInfo(models.Model):
 
 class HardwareInfo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    runner_id = models.ForeignKey(
+    runner = models.ForeignKey(
         RunnerInfo, on_delete=models.CASCADE, related_name='hardware')
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'runner_id': self.runner.id,
+        }
 
     def __str__(self):
         raise NotImplementedError("WIP")

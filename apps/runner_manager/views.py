@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from apps.runner_manager.models import RunnerInfo, Status
+from runner_manager.models import HardwareInfo, RunnerInfo, Status
 from accounts.models import User
 from django.forms import model_to_dict
 import secrets
@@ -58,7 +58,25 @@ def add_new_runner(request):
 
 @login_required
 def get_hardware(request):
-    raise NotImplementedError("WIP")
+    """
+    
+    """
+    if request.method == 'GET':
+        try:
+            user_runners = RunnerInfo.objects.filter(owner=request.user)
+            hardware = HardwareInfo.objects.filter(runner_id__in=user_runners)
+            return JsonResponse({
+                'status': 'success',
+                'data': [hw.to_json() for hw in hardware]
+            }, status=200)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+    else:
+        return JsonResponse({'error': 'Only GET method is allowed'},
+                             status=405)
 
 
 @login_required

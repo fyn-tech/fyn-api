@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.runner_manager.models import RunnerInfo
+from runner_manager.models import RunnerInfo 
 
 
 @admin.register(RunnerInfo)

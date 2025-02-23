@@ -16,7 +16,8 @@ urlpatterns = [
     # runner api
     path('register/', views.register),  # authenticate runner
     path('hardware_update/', views.hardware_update),  # update hardware info
-    path('runner_report_status/', views.report_status),  # runner hearbeat
+    path('runner_report_status/<uuid:runner_id>',
+         views.report_status, name='update_runner'),  # runner hearbeat
 
     # general (i.e. both front and runner) api
     path('start_job/', views.start_job),  # start job

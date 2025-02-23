@@ -21,13 +21,14 @@ def runners(request):
         RunnerInfo = RunnerInfo.objects.create(
             created_by=request.user, name=name, yaml_file=yaml_file)
 
-        return JsonResponse({'message': 'File received successfully'}, status=200)
+        return JsonResponse({'message': 'File received successfully'},
+                            status=200)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Front End API
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @login_required
@@ -59,7 +60,7 @@ def add_new_runner(request):
 @login_required
 def get_hardware(request):
     """
-    
+
     """
     if request.method == 'GET':
         try:
@@ -76,7 +77,7 @@ def get_hardware(request):
             }, status=500)
     else:
         return JsonResponse({'error': 'Only GET method is allowed'},
-                             status=405)
+                            status=405)
 
 
 @login_required
@@ -91,12 +92,31 @@ def get_jobs(request):
 
 @login_required
 def get_status(request):
-    raise NotImplementedError("WIP")
+    """
+
+    """
+
+    if request.method == 'GET':
+        try:
+            user_runners = RunnerInfo.objects.filter(owner=request.user)
+            runner_status = user_runners.values('id', 'state', 'last_contact')
+            return JsonResponse({
+                'status': 'success',
+                'data': list(runner_status)
+            }, status=200)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+    else:
+        return JsonResponse({'error': 'Only GET method is allowed'},
+                            status=405)
 
 
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Runner API
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def register(request):
@@ -111,9 +131,9 @@ def report_status(request):
     raise NotImplementedError("WIP")
 
 
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Genearal (multi-use) API
-# -------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 def start_job(request):
     raise NotImplementedError("WIP")

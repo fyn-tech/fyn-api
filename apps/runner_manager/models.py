@@ -31,7 +31,8 @@ class RunnerInfo(models.Model):
         max_length=20, choices=STATUS_CHOICES, default=Status.OFFLINE.value)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE, related_name='runner')
-
+    last_contact = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         raise NotImplementedError("WIP")
 

@@ -6,10 +6,12 @@ urlpatterns = [
     # front end api
     # add new runner.
     path('add_new_runner/', views.add_new_runner, name='add_new_runner'),
-    path('get_hardware/', views.get_hardware, name='get_hardware'),  # get hardware info
+    path('get_hardware/', views.get_hardware,
+         name='get_hardware'),  # get hardware info
     path('request_new_job/', views.request_new_job),  # new request new job
     path('get_jobs/', views.get_jobs),  # get jobs
-    path('get_status/', views.get_status),  # get runner state
+    path('get_status/', views.get_status,
+         name='get_status'),  # get runner state
 
     # runner api
     path('register/', views.register),  # authenticate runner

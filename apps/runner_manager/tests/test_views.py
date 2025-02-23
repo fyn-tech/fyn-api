@@ -1,11 +1,13 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 from runner_manager.models import HardwareInfo, RunnerInfo, Status
 import uuid
 
 
 class RunnerViewTests(TestCase):
+
     def setUp(self):
         """Set up test data"""
         # Create test user
@@ -17,6 +19,10 @@ class RunnerViewTests(TestCase):
         # URL for the add_new_runner view
         # Make sure to define this URL name in urls.py
         self.url = reverse('add_new_runner')
+
+    # -------------------------------------------------------------------------
+    # Test Front End API: add_runner
+    # -------------------------------------------------------------------------
 
     def test_add_runner_authenticated(self):
         """Test successful runner creation when user is authenticated"""
@@ -69,6 +75,10 @@ class RunnerViewTests(TestCase):
         data = response.json()
         self.assertEqual(data['error'], 'Only POST method is allowed')
 
+    # -------------------------------------------------------------------------
+    # Test Front End API: get_hardware
+    # -------------------------------------------------------------------------
+
     def test_get_hardware_authenticated(self):
         """Test successful hardware retrieval when user is authenticated"""
         # Login the user
@@ -95,7 +105,7 @@ class RunnerViewTests(TestCase):
         # Make the GET request
         url = reverse('get_hardware')
         response = self.client.get(url)
-        
+
         # Check response status code
         self.assertEqual(response.status_code, 200)
 
@@ -174,3 +184,107 @@ class RunnerViewTests(TestCase):
         self.assertIn(str(user_hardware.id), hardware_ids)
         self.assertNotIn(str(other_hardware.id), hardware_ids)
         self.assertEqual(len(data['data']), 1)
+
+    # ------------------------------------------------------------------------
+    # Test Front End API: get_status
+    # ------------------------------------------------------------------------
+
+    def test_get_status_authenticated(self):
+        """Test successful status retrieval when user is authenticated"""
+        # Login the user
+        self.client.login(username='testuser', password='testpass123')
+
+        # Create some test runners owned by the user
+        runners = [RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token1',
+            state=Status.BUSY.value,
+            last_contact=timezone.now()
+        ),
+            RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token2',
+            state=Status.IDLE.value,
+            last_contact=timezone.now()
+        ), RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token3',
+            state=Status.OFFLINE.value,
+        )]
+
+        # Make the GET request
+        url = reverse('get_status')
+        response = self.client.get(url)
+
+        # Check response status code
+        self.assertEqual(response.status_code, 200)
+
+        # Check response content
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+        self.assertIsInstance(data['data'], list)
+        self.assertEqual(len(data['data']), 3)
+
+        # Verify the hardware data
+        expected_states = {(str(r.id), r.state) for r in runners}
+        received_states = {(r['id'], r['state']) for r in data['data']}
+        self.assertEqual(expected_states, received_states)
+
+    def test_get_status_unauthenticated(self):
+        """Test status retrieval is rejected for unauthenticated users"""
+
+        url = reverse('get_status')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_get_status_wrong_method(self):
+        """Test that only GET method is allowed for get status"""
+
+        # Login first
+        self.client.login(username='testuser', password='testpass123')
+
+        # Try POST request
+        url = reverse('get_status')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 405)
+
+        # Verify error message
+        data = response.json()
+        self.assertEqual(data['error'], 'Only GET method is allowed')
+
+    def test_get_status_other_user(self):
+        """Test that only the user can get their own runners' state"""
+
+        self.client.login(username='testuser', password='testpass123')
+        other_user = get_user_model().objects.create_user(
+            username='otheruser',
+            password='testpass123'
+        )
+
+        # Create runners for both users
+        user_runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token1',
+            state=Status.OFFLINE.value
+        )
+        other_runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=other_user,
+            token='token2',
+            state=Status.OFFLINE.value
+        )
+
+        # Make the GET request
+        url = reverse('get_status')
+        response = self.client.get(url)
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data['data']), 1)
+        self.assertIn(str(user_runner.id), data['data'][0]['id'])
+        self.assertNotIn(str(other_runner.id), data['data'][0]['id'])

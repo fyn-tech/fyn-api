@@ -292,6 +292,118 @@ class RunnerViewTests(TestCase):
         self.assertNotIn(str(other_runner.id), data['data'][0]['id'])
 
     # -------------------------------------------------------------------------
+    # Test Runner API: register
+    # -------------------------------------------------------------------------
+
+    def test_register_successful(self):
+        """Test successful register valid token"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.UNREGISTERED.value,
+        )
+
+        # Prepare and make PATCH valid request
+        patch_data = {
+            'id': str(runner.id),
+            'token': 'secret_token'
+        }
+        url = reverse('register', args=[runner.id])
+        response = self.client.post(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+        self.assertEqual(data['id'], str(runner.id))
+        self.assertNotEqual(data['token'], 'secret_token')
+
+        # Verify database was updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.state, Status.IDLE.value)
+        self.assertNotEqual(runner.token, 'secret_token')
+        self.assertIsNotNone(runner.last_contact)
+
+    def test_register_invalid_token(self):
+        """Test register is rejected with invalid token"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.UNREGISTERED.value,
+        )
+
+        # Prepare and make PATCH request with wrong token
+        patch_data = {
+            'id': str(runner.id),
+            'token': 'wrong_token'
+        }
+        url = reverse('register', args=[runner.id])
+        response = self.client.post(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(data['message'], 'Authentication failed')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.UNREGISTERED.value)
+        self.assertIsNone(runner.last_contact)
+
+    def test_register_runner_not_found(self):
+        """Test register non-existent runner ID"""
+        # Generate a random UUID that doesn't exist
+        non_existent_id = uuid.uuid4()
+        patch_data = {
+            'id': str(non_existent_id),
+            'token': 'any_token'
+        }
+
+        # Make the PATCH request
+        url = reverse('register', args=[non_existent_id])
+        response = self.client.post(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 404)
+
+    def test_register_wrong_method(self):
+        """Test that only POST method is allowed"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.UNREGISTERED.value
+        )
+
+        # Try GET request
+        url = reverse('register', args=[runner.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+        # Verify error message
+        data = response.json()
+        self.assertEqual(data['error'], 'Only POST method is allowed')
+
+    # -------------------------------------------------------------------------
     # Test Runner API: report_status
     # -------------------------------------------------------------------------
 

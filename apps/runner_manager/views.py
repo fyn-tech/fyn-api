@@ -124,9 +124,10 @@ def register(request, runner_id):
         runner.save()
 
         return JsonResponse({
+            'status': 'success',
             'id': str(runner.id),
             'token': runner.token
-        }, status=201)
+        }, status=200)
 
     except Exception as e:
         return JsonResponse({

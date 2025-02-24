@@ -55,7 +55,7 @@ class RunnerViewTests(TestCase):
         runner = RunnerInfo.objects.get(id=data['id'])
         self.assertEqual(runner.owner, self.user)
         self.assertEqual(runner.token, data['token'])
-        self.assertEqual(runner.state, Status.OFFLINE.value)
+        self.assertEqual(runner.state, Status.UNREGISTERED.value)
 
     def test_add_runner_unauthenticated(self):
         """Test runner creation is rejected for unauthenticated users"""
@@ -328,6 +328,39 @@ class RunnerViewTests(TestCase):
         runner.refresh_from_db()
         self.assertEqual(runner.state, Status.BUSY.value)
         self.assertGreater(runner.last_contact, old_last_contact)
+
+    def test_report_status_runner_unregistered(self):
+        """Test status update with non-existent runner ID"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.UNREGISTERED.value,
+        )
+
+        # Prepare and make PATCH request with wrong token
+        patch_data = {
+            'token': 'secret_token',
+            'state': Status.BUSY.value
+        }
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(data['message'], 'Unregistered runner')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.UNREGISTERED.value)
 
     def test_report_status_invalid_token(self):
         """Test status update is rejected with invalid token"""

@@ -11,25 +11,6 @@ import secrets
 import json
 
 
-@login_required
-def runners(request):
-
-    raise NotImplementedError("TBD")
-    if request.method == 'FETCH':
-
-        # Get the config file and the name from the request
-        yaml_file = request.FILES['yaml_file']
-        name = request.POST['name']
-
-        # Create the simulation object
-        RunnerInfo = RunnerInfo.objects.create(
-            created_by=request.user, name=name, yaml_file=yaml_file)
-
-        return JsonResponse({'message': 'File received successfully'},
-                            status=200)
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
 # -----------------------------------------------------------------------------
 # Front End API
 # -----------------------------------------------------------------------------
@@ -44,14 +25,12 @@ def add_new_runner(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is allowed'},
                             status=405)
-    # Generate a secure token
-    token = secrets.token_urlsafe(32)
 
     # Create new runner
     runner = RunnerInfo.objects.create(
         owner=request.user,
-        token=token,
-        state=Status.OFFLINE.value
+        token=secrets.token_urlsafe(32),
+        state=Status.UNREGISTERED.value
     )
 
     return JsonResponse({
@@ -120,8 +99,40 @@ def get_status(request):
 # -----------------------------------------------------------------------------
 
 
-def register(request):
-    raise NotImplementedError("WIP")
+def register(request, runner_id):
+    """
+
+    """
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed'},
+                            status=405)
+
+    runner = get_object_or_404(RunnerInfo, id=runner_id)
+
+    try:
+        data = json.loads(request.body)
+        if runner.token != data['token']:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication failed'
+            }, status=401)
+
+        runner.token = secrets.token_urlsafe(32)
+        runner.state = Status.IDLE.value
+        runner.last_contact = timezone.now()
+        runner.save()
+
+        return JsonResponse({
+            'id': str(runner.id),
+            'token': runner.token
+        }, status=201)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
 
 
 def hardware_update(request):
@@ -138,6 +149,12 @@ def report_status(request, runner_id):
                             status=405)
 
     runner = get_object_or_404(RunnerInfo, id=runner_id)
+
+    if runner.state == Status.UNREGISTERED.value:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Unregistered runner'
+        }, status=401)
 
     try:
         data = json.loads(request.body)

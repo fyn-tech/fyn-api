@@ -14,7 +14,8 @@ urlpatterns = [
          name='get_status'),  # get runner state
 
     # runner api
-    path('register/', views.register),  # authenticate runner
+    path('register//<uuid:runner_id>', views.register,
+         name='register'),  # authenticate runner
     path('hardware_update/', views.hardware_update),  # update hardware info
     path('report_status/<uuid:runner_id>',
          views.report_status, name='report_status'),  # runner hearbeat

@@ -12,6 +12,7 @@ class Status(Enum):
     IDLE = 'idle'
     BUSY = 'busy'
     OFFLINE = 'offline'
+    UNREGISTERED = 'unregistered'
 
 
 STATUS_CHOICES = [
@@ -28,11 +29,12 @@ class RunnerInfo(models.Model):
         max_length=100, blank=False, null=False, default="")
     active_jobs = models.JSONField(default=list)
     state = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=Status.OFFLINE.value)
+        max_length=20, choices=STATUS_CHOICES,
+        default=Status.UNREGISTERED.value)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE, related_name='runner')
     last_contact = models.DateTimeField(blank=True, null=True)
-    
+
     def __str__(self):
         raise NotImplementedError("WIP")
 

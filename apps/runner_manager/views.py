@@ -40,6 +40,39 @@ def add_new_runner(request):
 
 
 @login_required
+def delete_runner(request):
+    """
+
+    """
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Only DELETE method is allowed'},
+                            status=405)
+
+    try:
+        data = json.loads(request.body)
+
+        if 'id' not in data:
+            return JsonResponse({'error': 'Runner ID is required'}, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+    runner = get_object_or_404(RunnerInfo, id=data['id'])
+    if runner.owner != request.user:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Permission denied: You do not own this runner'
+        }, status=403)
+    runner.delete()
+
+    return JsonResponse({
+        'status': 'success',
+    }, status=200)
+
+
+@login_required
 def get_hardware(request):
     """
 

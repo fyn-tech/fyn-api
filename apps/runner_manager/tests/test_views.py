@@ -78,6 +78,134 @@ class RunnerViewTests(TestCase):
         self.assertEqual(data['error'], 'Only POST method is allowed')
 
     # -------------------------------------------------------------------------
+    # Test Front End API: delete_runner
+    # -------------------------------------------------------------------------
+
+    def test_delete_runner(self):
+        """Test successful runner deletion when user is authenticated"""
+        # Login the user
+        self.client.login(username='testuser', password='testpass123')
+
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token1',
+            state=Status.OFFLINE.value
+        )
+
+        # Make the DELETE request
+        url = reverse('delete_runner')
+        response = self.client.delete(
+            url,
+            data=json.dumps({'id': str(runner.id)}),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+
+        # Verify runner was deleted from database
+        with self.assertRaises(RunnerInfo.DoesNotExist):
+            RunnerInfo.objects.get(id=runner.id)
+
+    def test_delete_runner_unauthenticated(self):
+        """Test runner deletion is rejected for unauthenticated users"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='token1',
+            state=Status.OFFLINE.value
+        )
+
+        # Make the DELETE request without login
+        url = reverse('delete_runner')
+        response = self.client.delete(
+            url,
+            data=json.dumps({'id': str(runner.id)}),
+            content_type='application/json'
+        )
+
+        # Should redirect to login page
+        self.assertEqual(response.status_code, 302)
+
+        # Verify runner still exists in database
+        self.assertTrue(RunnerInfo.objects.filter(id=runner.id).exists())
+
+    def test_delete_runner_no_id(self):
+        """Test runner deletion is rejected when no ID is provided"""
+        # Login the user
+        self.client.login(username='testuser', password='testpass123')
+
+        # Make the DELETE request with missing ID
+        url = reverse('delete_runner')
+        response = self.client.delete(
+            url,
+            data=json.dumps({}),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertEqual(data['error'], 'Runner ID is required')
+
+    def test_delete_runner_wrong_method(self):
+        """Test that only DELETE method is allowed"""
+        # Login first
+        self.client.login(username='testuser', password='testpass123')
+
+        # Try POST request
+        url = reverse('delete_runner')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 405)
+
+        # Verify error message
+        data = response.json()
+        self.assertEqual(data['error'], 'Only DELETE method is allowed')
+
+    def test_delete_runner_other_user(self):
+        """Test that user can only delete their own runners"""
+        # Login the first user
+        self.client.login(username='testuser', password='testpass123')
+
+        # Create another user with their own runner
+        other_user = get_user_model().objects.create_user(
+            username='otheruser',
+            password='testpass123'
+        )
+
+        # Create a runner owned by the other user
+        other_runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=other_user,
+            token='othertoken',
+            state=Status.OFFLINE.value
+        )
+
+        # Try to delete the other user's runner
+        url = reverse('delete_runner')
+        response = self.client.delete(
+            url,
+            data=json.dumps({'id': str(other_runner.id)}),
+            content_type='application/json'
+        )
+
+        # Should get a 403 Forbidden since the runner doesn't belong to the
+        # authenticated user
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(
+            data['message'], 'Permission denied: You do not own this runner')
+
+        # Verify the runner still exists in database
+        self.assertTrue(RunnerInfo.objects.filter(id=other_runner.id).exists())
+
+    # -------------------------------------------------------------------------
     # Test Front End API: get_hardware
     # -------------------------------------------------------------------------
 

@@ -6,6 +6,7 @@ urlpatterns = [
     # front end api
     # add new runner.
     path('add_new_runner/', views.add_new_runner, name='add_new_runner'),
+    path('delete_runner/', views.delete_runner, name='delete_runner'),
     path('get_hardware/', views.get_hardware,
          name='get_hardware'),  # get hardware info
     path('request_new_job/', views.request_new_job),  # new request new job

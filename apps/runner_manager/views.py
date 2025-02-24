@@ -137,8 +137,9 @@ def report_status(request, runner_id):
         return JsonResponse({'error': 'Only PATCH method is allowed'},
                             status=405)
 
+    runner = get_object_or_404(RunnerInfo, id=runner_id)
+
     try:
-        runner = get_object_or_404(RunnerInfo, id=runner_id)
         data = json.loads(request.body)
 
         if runner.token != data['token']:

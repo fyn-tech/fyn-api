@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 from runner_manager.models import HardwareInfo, RunnerInfo, Status
 import uuid
+import json
+import datetime
 
 
 class RunnerViewTests(TestCase):
@@ -185,9 +187,9 @@ class RunnerViewTests(TestCase):
         self.assertNotIn(str(other_hardware.id), hardware_ids)
         self.assertEqual(len(data['data']), 1)
 
-    # ------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Test Front End API: get_status
-    # ------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def test_get_status_authenticated(self):
         """Test successful status retrieval when user is authenticated"""
@@ -288,3 +290,152 @@ class RunnerViewTests(TestCase):
         self.assertEqual(len(data['data']), 1)
         self.assertIn(str(user_runner.id), data['data'][0]['id'])
         self.assertNotIn(str(other_runner.id), data['data'][0]['id'])
+
+    # -------------------------------------------------------------------------
+    # Test Runner API: report_status
+    # -------------------------------------------------------------------------
+
+    def test_report_status_successful(self):
+        """Test successful status update with valid token and state"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=timezone.now() - datetime.timedelta(minutes=10)
+        )
+        old_last_contact = runner.last_contact
+
+        # Prepare and make PATCH valid request
+        patch_data = {
+            'token': 'secret_token',
+            'state': Status.BUSY.value
+        }
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+
+        # Verify database was updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.state, Status.BUSY.value)
+        self.assertGreater(runner.last_contact, old_last_contact)
+
+    def test_report_status_invalid_token(self):
+        """Test status update is rejected with invalid token"""
+        # Create a test runner
+        time_now = timezone.now()
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=time_now
+        )
+
+        # Prepare and make PATCH request with wrong token
+        patch_data = {
+            'token': 'wrong_token',
+            'state': Status.BUSY.value
+        }
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(data['message'], 'Authentication failed')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.IDLE.value)
+        self.assertEqual(runner.last_contact, time_now)
+
+    def test_report_status_invalid_state(self):
+        """Test status update is rejected with invalid state"""
+        # Create a test runner
+        time_now = timezone.now()
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=time_now
+        )
+
+        # Prepare and make PATCH request with invalid state
+        patch_data = {
+            'token': 'secret_token',
+            'state': 'invalid_state'
+        }
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 500)
+        data = response.json()
+        self.assertIn(data['status'], 'error')
+
+        # Verify database was NOT updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.IDLE.value)
+        self.assertEqual(runner.last_contact, time_now)
+
+    def test_report_status_runner_not_found(self):
+        """Test status update with non-existent runner ID"""
+        # Generate a random UUID that doesn't exist
+        non_existent_id = uuid.uuid4()
+        patch_data = {
+            'token': 'any_token',
+            'state': Status.BUSY.value
+        }
+
+        # Make the PATCH request
+        url = reverse('report_status', args=[non_existent_id])
+        response = self.client.patch(
+            url,
+            data=json.dumps(patch_data),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 404)
+
+    def test_report_status_wrong_method(self):
+        """Test that only PATCH method is allowed"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=timezone.now() - datetime.timedelta(minutes=10)
+        )
+
+        # Try GET request
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+        # Verify error message
+        data = response.json()
+        self.assertEqual(data['error'], 'Only PATCH method is allowed')

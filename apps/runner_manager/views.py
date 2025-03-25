@@ -1,5 +1,6 @@
 from django.http import JsonResponse, HttpResponse
-from django.contrib.auth.decorators import login_required, csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.template import loader
 from runner_manager.models import HardwareInfo, RunnerInfo, Status
 from accounts.models import User

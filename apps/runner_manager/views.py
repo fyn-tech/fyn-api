@@ -1,5 +1,5 @@
 from django.http import JsonResponse, HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, csrf_exempt
 from django.template import loader
 from runner_manager.models import HardwareInfo, RunnerInfo, Status
 from accounts.models import User
@@ -131,7 +131,7 @@ def get_status(request):
 # Runner API
 # -----------------------------------------------------------------------------
 
-
+@csrf_exempt
 def register(request, runner_id):
     """
 
@@ -169,10 +169,12 @@ def register(request, runner_id):
         }, status=500)
 
 
+@csrf_exempt
 def hardware_update(request):
     raise NotImplementedError("WIP")
 
 
+@csrf_exempt
 def report_status(request, runner_id):
     """
 

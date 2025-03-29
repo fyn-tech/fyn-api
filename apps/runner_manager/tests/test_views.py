@@ -19,7 +19,6 @@ class RunnerViewTests(TestCase):
         )
         self.client = Client()
         # URL for the add_new_runner view
-        # Make sure to define this URL name in urls.py
         self.url = reverse('add_new_runner')
 
     # -------------------------------------------------------------------------
@@ -424,7 +423,7 @@ class RunnerViewTests(TestCase):
     # -------------------------------------------------------------------------
 
     def test_register_successful(self):
-        """Test successful register valid token"""
+        """Test successful register with valid token in header"""
         # Create a test runner
         runner = RunnerInfo.objects.create(
             id=uuid.uuid4(),
@@ -433,16 +432,12 @@ class RunnerViewTests(TestCase):
             state=Status.UNREGISTERED.value,
         )
 
-        # Prepare and make PATCH valid request
-        patch_data = {
-            'id': str(runner.id),
-            'token': 'secret_token'
-        }
+        # Make POST request with token in header
         url = reverse('register', args=[runner.id])
         response = self.client.post(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            content_type='application/json',
+            HTTP_TOKEN='secret_token'  # Django test client uses HTTP_ prefix for headers
         )
 
         # Check response
@@ -458,8 +453,8 @@ class RunnerViewTests(TestCase):
         self.assertNotEqual(runner.token, 'secret_token')
         self.assertIsNotNone(runner.last_contact)
 
-    def test_register_invalid_token(self):
-        """Test register is rejected with invalid token"""
+    def test_register_missing_token_header(self):
+        """Test register is rejected when token header is missing"""
         # Create a test runner
         runner = RunnerInfo.objects.create(
             id=uuid.uuid4(),
@@ -468,16 +463,41 @@ class RunnerViewTests(TestCase):
             state=Status.UNREGISTERED.value,
         )
 
-        # Prepare and make PATCH request with wrong token
-        patch_data = {
-            'id': str(runner.id),
-            'token': 'wrong_token'
-        }
+        # Make POST request without token header
         url = reverse('register', args=[runner.id])
         response = self.client.post(
             url,
-            data=json.dumps(patch_data),
             content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(
+            data['message'], 'Authentication token missing in headers')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.UNREGISTERED.value)
+
+    def test_register_invalid_token(self):
+        """Test register is rejected with invalid token in header"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.UNREGISTERED.value,
+        )
+
+        # Make POST request with wrong token in header
+        url = reverse('register', args=[runner.id])
+        response = self.client.post(
+            url,
+            content_type='application/json',
+            HTTP_TOKEN='wrong_token'
         )
 
         # Check response
@@ -496,17 +516,13 @@ class RunnerViewTests(TestCase):
         """Test register non-existent runner ID"""
         # Generate a random UUID that doesn't exist
         non_existent_id = uuid.uuid4()
-        patch_data = {
-            'id': str(non_existent_id),
-            'token': 'any_token'
-        }
 
-        # Make the PATCH request
+        # Make the POST request
         url = reverse('register', args=[non_existent_id])
         response = self.client.post(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            content_type='application/json',
+            HTTP_TOKEN='any_token'
         )
 
         # Check response
@@ -536,7 +552,7 @@ class RunnerViewTests(TestCase):
     # -------------------------------------------------------------------------
 
     def test_report_status_successful(self):
-        """Test successful status update with valid token and state"""
+        """Test successful status update with valid token in header"""
         # Create a test runner
         runner = RunnerInfo.objects.create(
             id=uuid.uuid4(),
@@ -547,16 +563,13 @@ class RunnerViewTests(TestCase):
         )
         old_last_contact = runner.last_contact
 
-        # Prepare and make PATCH valid request
-        patch_data = {
-            'token': 'secret_token',
-            'state': Status.BUSY.value
-        }
+        # Make PATCH request with token in header
         url = reverse('report_status', args=[runner.id])
         response = self.client.patch(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            data=json.dumps({'state': Status.BUSY.value}),
+            content_type='application/json',
+            HTTP_TOKEN='secret_token'
         )
 
         # Check response
@@ -569,8 +582,40 @@ class RunnerViewTests(TestCase):
         self.assertEqual(runner.state, Status.BUSY.value)
         self.assertGreater(runner.last_contact, old_last_contact)
 
+    def test_report_status_missing_token_header(self):
+        """Test status update is rejected when token header is missing"""
+        # Create a test runner
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=timezone.now()
+        )
+        old_last_contact = runner.last_contact
+
+        # Make PATCH request without token header
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps({'state': Status.BUSY.value}),
+            content_type='application/json'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(
+            data['message'], 'Authentication token missing in headers')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.state, Status.IDLE.value)
+        self.assertEqual(runner.last_contact, old_last_contact)
+
     def test_report_status_runner_unregistered(self):
-        """Test status update with non-existent runner ID"""
+        """Test status update with unregistered runner"""
         # Create a test runner
         runner = RunnerInfo.objects.create(
             id=uuid.uuid4(),
@@ -579,16 +624,13 @@ class RunnerViewTests(TestCase):
             state=Status.UNREGISTERED.value,
         )
 
-        # Prepare and make PATCH request with wrong token
-        patch_data = {
-            'token': 'secret_token',
-            'state': Status.BUSY.value
-        }
+        # Make PATCH request with token in header
         url = reverse('report_status', args=[runner.id])
         response = self.client.patch(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            data=json.dumps({'state': Status.BUSY.value}),
+            content_type='application/json',
+            HTTP_TOKEN='secret_token'
         )
 
         # Check response
@@ -603,7 +645,7 @@ class RunnerViewTests(TestCase):
         self.assertEqual(runner.state, Status.UNREGISTERED.value)
 
     def test_report_status_invalid_token(self):
-        """Test status update is rejected with invalid token"""
+        """Test status update is rejected with invalid token in header"""
         # Create a test runner
         time_now = timezone.now()
         runner = RunnerInfo.objects.create(
@@ -614,16 +656,13 @@ class RunnerViewTests(TestCase):
             last_contact=time_now
         )
 
-        # Prepare and make PATCH request with wrong token
-        patch_data = {
-            'token': 'wrong_token',
-            'state': Status.BUSY.value
-        }
+        # Make PATCH request with wrong token in header
         url = reverse('report_status', args=[runner.id])
         response = self.client.patch(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            data=json.dumps({'state': Status.BUSY.value}),
+            content_type='application/json',
+            HTTP_TOKEN='wrong_token'
         )
 
         # Check response
@@ -631,6 +670,40 @@ class RunnerViewTests(TestCase):
         data = response.json()
         self.assertEqual(data['status'], 'error')
         self.assertEqual(data['message'], 'Authentication failed')
+
+        # Verify database was not updated
+        runner.refresh_from_db()
+        self.assertEqual(runner.token, 'secret_token')
+        self.assertEqual(runner.state, Status.IDLE.value)
+        self.assertEqual(runner.last_contact, time_now)
+
+    def test_report_status_missing_state(self):
+        """Test status update is rejected when state is missing in request body"""
+        # Create a test runner
+        time_now = timezone.now()
+        runner = RunnerInfo.objects.create(
+            id=uuid.uuid4(),
+            owner=self.user,
+            token='secret_token',
+            state=Status.IDLE.value,
+            last_contact=time_now
+        )
+
+        # Make PATCH request with token in header but no state in body
+        url = reverse('report_status', args=[runner.id])
+        response = self.client.patch(
+            url,
+            data=json.dumps({}),  # Empty body
+            content_type='application/json',
+            HTTP_TOKEN='secret_token'
+        )
+
+        # Check response
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertEqual(data['status'], 'error')
+        self.assertEqual(
+            data['message'], 'State is required in the request body')
 
         # Verify database was not updated
         runner.refresh_from_db()
@@ -650,16 +723,13 @@ class RunnerViewTests(TestCase):
             last_contact=time_now
         )
 
-        # Prepare and make PATCH request with invalid state
-        patch_data = {
-            'token': 'secret_token',
-            'state': 'invalid_state'
-        }
+        # Make PATCH request with token in header but invalid state in body
         url = reverse('report_status', args=[runner.id])
         response = self.client.patch(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            data=json.dumps({'state': 'invalid_state'}),
+            content_type='application/json',
+            HTTP_TOKEN='secret_token'
         )
 
         # Check response
@@ -677,17 +747,14 @@ class RunnerViewTests(TestCase):
         """Test status update with non-existent runner ID"""
         # Generate a random UUID that doesn't exist
         non_existent_id = uuid.uuid4()
-        patch_data = {
-            'token': 'any_token',
-            'state': Status.BUSY.value
-        }
 
-        # Make the PATCH request
+        # Make the PATCH request with token in header
         url = reverse('report_status', args=[non_existent_id])
         response = self.client.patch(
             url,
-            data=json.dumps(patch_data),
-            content_type='application/json'
+            data=json.dumps({'state': Status.BUSY.value}),
+            content_type='application/json',
+            HTTP_TOKEN='any_token'
         )
 
         # Check response

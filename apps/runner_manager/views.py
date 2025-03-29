@@ -145,8 +145,14 @@ def register(request, runner_id):
     runner = get_object_or_404(RunnerInfo, id=runner_id)
 
     try:
-        data = json.loads(request.body)
-        if runner.token != data['token']:
+        token = request.headers.get('token')
+        if not token:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication token missing in headers'
+            }, status=401)
+
+        if runner.token != token:
             return JsonResponse({
                 'status': 'error',
                 'message': 'Authentication failed'
@@ -194,13 +200,25 @@ def report_status(request, runner_id):
         }, status=401)
 
     try:
-        data = json.loads(request.body)
+        token = request.headers.get('token')
+        if not token:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication token missing in headers'
+            }, status=401)
 
-        if runner.token != data['token']:
+        if runner.token != token:
             return JsonResponse({
                 'status': 'error',
                 'message': 'Authentication failed'
             }, status=401)
+
+        data = json.loads(request.body)
+        if 'state' not in data:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'State is required in the request body'
+            }, status=400)
 
         runner.last_contact = timezone.now()
         runner.state = Status(data['state'].lower()).value

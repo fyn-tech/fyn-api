@@ -36,6 +36,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'accounts',
+    'channels',
     'runner_manager',
     'simulation_manager',
 ]
@@ -78,6 +80,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fyn-api.wsgi.application'
+ASGI_APPLICATION = 'fyn-api.asgi.application'
 
 # Database
 if os.getenv('ENVIRONMENT') == 'production':

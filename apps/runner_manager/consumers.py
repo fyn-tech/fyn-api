@@ -1,10 +1,26 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from runner_manager.models import RunnerInfo
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class RunnerConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.accept()
+        runner_id = self.scope["url_route"]["kwargs"]["runner_id"]
+        try:
+            runner = await RunnerInfo.objects.aget(id=runner_id)
+            token = None
+            for tuple in self.scope["headers"]:
+                if tuple[0].decode("utf-8") == "token":
+                    token = tuple[1].decode("utf-8")
+
+            if token and token == runner.token:
+                await self.accept()
+            else:
+                await self.close()
+
+        except ObjectDoesNotExist:
+            await self.close()
 
     async def disconnect(self, close_code):
         pass

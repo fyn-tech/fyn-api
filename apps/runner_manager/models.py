@@ -1,8 +1,5 @@
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.core.files.storage import default_storage as storage
 import uuid
 import os
 from enum import Enum

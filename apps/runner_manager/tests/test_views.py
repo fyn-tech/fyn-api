@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
-from runner_manager.models import HardwareInfo, RunnerInfo, Status
+from runner_manager.models import SystemInfo, RunnerInfo, Status
 import uuid
 import json
 import datetime
@@ -205,11 +205,11 @@ class RunnerViewTests(TestCase):
         self.assertTrue(RunnerInfo.objects.filter(id=other_runner.id).exists())
 
     # -------------------------------------------------------------------------
-    # Test Front End API: get_hardware
+    # Test Front End API: get_system
     # -------------------------------------------------------------------------
 
-    def test_get_hardware_authenticated(self):
-        """Test successful hardware retrieval when user is authenticated"""
+    def test_get_system_authenticated(self):
+        """Test successful system retrieval when user is authenticated"""
         # Login the user
         self.client.login(username='testuser', password='testpass123')
 
@@ -227,12 +227,12 @@ class RunnerViewTests(TestCase):
             state=Status.OFFLINE.value
         )
 
-        # Create some test hardware associated with the runners
-        hardware1 = HardwareInfo.objects.create(runner=runner1)
-        hardware2 = HardwareInfo.objects.create(runner=runner2)
+        # Create some test system associated with the runners
+        system1 = SystemInfo.objects.create(runner=runner1)
+        system2 = SystemInfo.objects.create(runner=runner2)
 
         # Make the GET request
-        url = reverse('get_hardware')
+        url = reverse('get_system')
         response = self.client.get(url)
 
         # Check response status code
@@ -244,26 +244,26 @@ class RunnerViewTests(TestCase):
         self.assertIsInstance(data['data'], list)
         self.assertEqual(len(data['data']), 2)
 
-        # Verify the hardware data
-        hardware_ids = {str(hw['id']) for hw in data['data']}
-        self.assertIn(str(hardware1.id), hardware_ids)
-        self.assertIn(str(hardware2.id), hardware_ids)
+        # Verify the system data
+        system_ids = {str(hw['id']) for hw in data['data']}
+        self.assertIn(str(system1.id), system_ids)
+        self.assertIn(str(system2.id), system_ids)
 
-    def test_get_hardware_unauthenticated(self):
-        """Test hardware retrieval is rejected for unauthenticated users"""
-        url = reverse('get_hardware')
+    def test_get_system_unauthenticated(self):
+        """Test system retrieval is rejected for unauthenticated users"""
+        url = reverse('get_system')
         response = self.client.get(url)
 
         # Should redirect to login page
         self.assertEqual(response.status_code, 302)
 
-    def test_get_hardware_wrong_method(self):
+    def test_get_system_wrong_method(self):
         """Test that only GET method is allowed"""
         # Login first
         self.client.login(username='testuser', password='testpass123')
 
         # Try POST request
-        url = reverse('get_hardware')
+        url = reverse('get_system')
         response = self.client.post(url)
         self.assertEqual(response.status_code, 405)
 
@@ -271,12 +271,12 @@ class RunnerViewTests(TestCase):
         data = response.json()
         self.assertEqual(data['error'], 'Only GET method is allowed')
 
-    def test_get_hardware_other_user(self):
-        """Test that user can only see their own runners' hardware"""
+    def test_get_system_other_user(self):
+        """Test that user can only see their own runners' system"""
         # Login the first user
         self.client.login(username='testuser', password='testpass123')
 
-        # Create another user with their own runner and hardware
+        # Create another user with their own runner and system
         other_user = get_user_model().objects.create_user(
             username='otheruser',
             password='testpass123'
@@ -296,22 +296,22 @@ class RunnerViewTests(TestCase):
             state=Status.OFFLINE.value
         )
 
-        # Create hardware for both runners
-        user_hardware = HardwareInfo.objects.create(runner=user_runner)
-        other_hardware = HardwareInfo.objects.create(runner=other_runner)
+        # Create system for both runners
+        user_system = SystemInfo.objects.create(runner=user_runner)
+        other_system = SystemInfo.objects.create(runner=other_runner)
 
         # Make the GET request
-        url = reverse('get_hardware')
+        url = reverse('get_system')
         response = self.client.get(url)
 
         # Check response
         self.assertEqual(response.status_code, 200)
         data = response.json()
 
-        # Should only see own hardware
-        hardware_ids = {str(hw['id']) for hw in data['data']}
-        self.assertIn(str(user_hardware.id), hardware_ids)
-        self.assertNotIn(str(other_hardware.id), hardware_ids)
+        # Should only see own system
+        system_ids = {str(hw['id']) for hw in data['data']}
+        self.assertIn(str(user_system.id), system_ids)
+        self.assertNotIn(str(other_system.id), system_ids)
         self.assertEqual(len(data['data']), 1)
 
     # -------------------------------------------------------------------------
@@ -357,7 +357,7 @@ class RunnerViewTests(TestCase):
         self.assertIsInstance(data['data'], list)
         self.assertEqual(len(data['data']), 3)
 
-        # Verify the hardware data
+        # Verify the system data
         expected_states = {(str(r.id), r.state) for r in runners}
         received_states = {(r['id'], r['state']) for r in data['data']}
         self.assertEqual(expected_states, received_states)

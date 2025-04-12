@@ -36,16 +36,76 @@ class RunnerInfo(models.Model):
         return f"Runner {self.id} - Owner: {self.owner} - State: {self.state}"
 
 
-class HardwareInfo(models.Model):
+class SystemInfo(models.Model):
+    """
+    Note: Units are base units, so Bytes no GB or MB. Conversions can be done 
+    in the client depending on need.
+    """
+
+    # Iding
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     runner = models.ForeignKey(
-        RunnerInfo, on_delete=models.CASCADE, related_name='hardware')
+        RunnerInfo, on_delete=models.CASCADE, related_name='system')
+
+    # OS
+    system_name = models.CharField(max_length=100, null=True)
+    system_release = models.CharField(max_length=100, null=True)
+    system_version = models.CharField(max_length=100, null=True)
+    system_architecture = models.CharField(max_length=100, null=True)
+
+    # CPU
+    cpu_model = models.CharField(max_length=100, null=True)
+    cpu_clock_speed_advertised = models.FloatField(null=True)
+    cpu_clock_speed_actual = models.FloatField(null=True)
+    cpu_logical_cores = models.IntegerField(null=True)
+    cpu_physical_cores = models.IntegerField(null=True)
+    cpu_cache_l1_size = models.IntegerField(null=True)
+    cpu_cache_l2_size = models.IntegerField(null=True)
+    cpu_cache_l3_size = models.IntegerField(null=True)
+
+    # main memory
+    ram_size_total = models.IntegerField(null=True)
+
+    # disk
+    disk_size_total = models.IntegerField(null=True)
+    disk_size_available = models.IntegerField(null=True)
+
+    # GPU info
+    gpu_vendor = models.CharField(max_length=100, null=True)
+    gpu_model = models.CharField(max_length=100, null=True)
+    gpu_memory_size = models.IntegerField(null=True)
+    gpu_clock_speed = models.FloatField(null=True)
+    gpu_compute_units = models.IntegerField(null=True)
+    gpu_core_count = models.IntegerField(null=True)
+    gpu_driver_version = models.CharField(max_length=100, null=True)
 
     def to_json(self):
         return {
             'id': self.id,
             'runner_id': self.runner.id,
+            'system_name': self.system_name,
+            'system_release': self.system_release,
+            'system_version': self.system_version,
+            'system_architecture': self.system_architecture,
+            'cpu_model': self.cpu_model,
+            'cpu_clock_speed_advertised': self.cpu_clock_speed,
+            'cpu_clock_speed_actual': self.cpu_clock_speed_actual,
+            'cpu_logical_cores': self.cpu_logical_cores,
+            'cpu_physical_cores': self.cpu_physical_cores,
+            'cpu_cache_l1_size': self.cpu_cache_l1_size,
+            'cpu_cache_l2_size': self.cpu_cache_l2_size,
+            'cpu_cache_l3_size': self.cpu_cache_l3_size,
+            'ram_size_total': self.ram_size_total,
+            'disk_size_total': self.disk_size_total,
+            'disk_size_available': self.disk_size_available,
+            'gpu_vendor': self.gpu_vendor,
+            'gpu_model': self.gpu_model,
+            'gpu_memory_size': self.gpu_memory_size,
+            'gpu_clock_speed': self.gpu_clock_speed,
+            'gpu_compute_units': self.gpu_compute_units,
+            'gpu_core_count': self.gpu_core_count,
+            'gpu_driver_version': self.gpu_driver_version
         }
 
     def __str__(self):
-        return (f"Hardware {self.id} - Runner: {self.runner}")
+        return (f"System {self.id} - Runner: {self.runner}")

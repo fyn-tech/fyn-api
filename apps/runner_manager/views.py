@@ -2,7 +2,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.template import loader
-from runner_manager.models import HardwareInfo, RunnerInfo, Status
+from runner_manager.models import SystemInfo, RunnerInfo, Status
 from accounts.models import User
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404
@@ -74,7 +74,7 @@ def delete_runner(request):
 
 
 @login_required
-def get_hardware(request):
+def get_system(request):
     """
 
     """
@@ -83,7 +83,7 @@ def get_hardware(request):
                             status=405)
     try:
         user_runners = RunnerInfo.objects.filter(owner=request.user)
-        hardware = HardwareInfo.objects.filter(runner_id__in=user_runners)
+        hardware = SystemInfo.objects.filter(runner_id__in=user_runners)
         return JsonResponse({
             'status': 'success',
             'data': [hw.to_json() for hw in hardware]
@@ -177,8 +177,68 @@ def register(request, runner_id):
 
 
 @csrf_exempt
-def hardware_update(request):
-    raise NotImplementedError("WIP")
+def update_system(request, runner_id):
+
+    if request.method != 'PUT':
+        return JsonResponse({'error': 'Only PUT method is allowed'},
+                            status=405)
+
+    runner = get_object_or_404(RunnerInfo, id=runner_id)
+
+    if runner.state == Status.UNREGISTERED.value:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Unregistered runner'
+        }, status=401)
+
+    try:
+
+        token = request.headers.get('token')
+        if not token:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication token missing in headers'
+            }, status=401)
+
+        if runner.token != token:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Authentication failed'
+            }, status=401)
+
+        update_data = json.loads(request.body).copy()
+        system_info = SystemInfo.objects.get_or_create(runner=runner)[0]
+
+        # Protect against accidental keys in request
+        if 'id' in update_data:
+            del update_data['id']
+        if 'runner_id' in update_data:
+            del update_data['runner_id']
+
+        # Update system_info fields directly
+        for field, value in update_data.items():
+            if hasattr(system_info, field):
+                setattr(system_info, field, value)
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Unknown SystemInfo field: {field}'
+                }, status=400)
+
+        # Save the updated system info
+        system_info.save()
+
+        runner.last_contact = timezone.now()
+        runner.save()
+        return JsonResponse({
+            'status': 'success'
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
 
 
 @csrf_exempt

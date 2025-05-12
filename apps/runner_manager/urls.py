@@ -29,8 +29,4 @@ urlpatterns = [
     path('runner_manager/start_job/', views.start_job),  # start job
     path('runner_manager/terminate_job/', views.terminate_job), # terminate job
     
-
-    # other app apis
-    path('', include('runner_manager/accounts.urls')),
-
 ]

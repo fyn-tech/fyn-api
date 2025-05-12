@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from . import views
 
 
@@ -25,5 +26,5 @@ urlpatterns = [
     path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
     path('accounts/', include('accounts.urls')),
     path('', include('runner_manager.urls')),
-    path('simulation_manager/', include('simulation_manager.urls'))
+    path('simulation_manager/', include('simulation_manager.urls')),
 ]

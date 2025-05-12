@@ -43,9 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third party
     'corsheaders',
-    'accounts',
     'channels',
+    'drf_spectacular',
+    'rest_framework',
+
+    # Local App
+    'accounts',
     'runner_manager',
     'simulation_manager',
 ]
@@ -101,6 +107,38 @@ else:  # Local development database
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Schema Generation
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Fyn-Tech API',
+    'DESCRIPTION': 'Schema for the REST API of Fyn-Tech',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SERVERS': [
+        {'url': 'http://fapi.fyn-tech.com:8000', 'description': 'Production API'},
+    ],
+    'TAGS': [
+        {'name': 'Simulation', 'description': 'Simulation operations'},
+    ],
+    'EXTENSIONS_TO_SCHEMA_FUNCTION': lambda generator, request, public: {
+        'x-speakeasy-retries': {
+            'strategy': 'backoff',
+            'backoff': {
+                'initialInterval': 500,
+                'maxInterval': 60000,
+                'maxElapsedTime': 3600000,
+                'exponent': 1.5,
+            },
+            'statusCodes': ['5XX'],
+            'retryConnectionErrors': True,
+        }
+    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

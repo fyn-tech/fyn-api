@@ -1,6 +1,11 @@
 from django.urls import include, path
 from . import views
 
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'simulation_manager2', views.SimulationViewSet)
+
 urlpatterns = [
     # General fyn-api
     path('simulation_submission/', views.handle_simulation_submission_form),
@@ -14,4 +19,5 @@ urlpatterns = [
     path('simulation_manager/get_user_simulations/<uuid:id>', views.get_user_simulations, name='get_user_simulations'),
     path('simulation_manager/get_simulation/<uuid:id>', views.get_simulation, name='get_simulation'),
     path('simulation_manager/delete_simulation/<uuid:id>', views.delete_simulation, name='delete_simulation'),
+    path('', include(router.urls)),
 ]

@@ -70,3 +70,35 @@ def delete_simulation(request, id):
     simulation = Simulation.objects.get(id=id)
     simulation.delete()
     return JsonResponse({'status': 'success', 'message': 'Simulation deleted successfully'}, status=200)
+
+
+
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+# from .models import Simulation
+from .serializers import SimulationSerializer
+
+class SimulationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows books to be viewed or edited.
+    """
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    @action(detail=True, methods=['get'])
+    def author_books(self, request, pk=None):
+        """
+        Returns all books written by the same author as the specified book.
+        """
+        try:
+            book = self.get_object()
+        except Simulation.DoesNotExist:
+            return Response(
+                {"error": "Simulation not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        author_books = Simulation.objects.filter(author=book.author).exclude(id=book.id)
+        serializer = self.get_serializer(author_books, many=True)
+        return Response(serializer.data)

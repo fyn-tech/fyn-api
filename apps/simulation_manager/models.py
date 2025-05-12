@@ -15,6 +15,7 @@ class Simulation(models.Model):
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now=True)
     created_by  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='simulations')
+    status      = models.IntegerField(default=0)
 
     # simulation data
     yaml_file = models.FileField(upload_to='yaml_files/')

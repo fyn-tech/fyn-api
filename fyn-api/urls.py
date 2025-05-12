@@ -24,6 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_csrf_token/', views.get_csrf_token, name='get_csrf_token'),
     path('accounts/', include('accounts.urls')),
-    path('runner_manager/', include('runner_manager.urls')),
+    path('', include('runner_manager.urls')),
     path('simulation_manager/', include('simulation_manager.urls'))
 ]

@@ -4,7 +4,7 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'simulation_manager2', views.SimulationViewSet)
+router.register(r'simulation_manager', views.SimulationViewSet)
 
 urlpatterns = [
     # General fyn-api

@@ -120,7 +120,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
     'SERVERS': [
-        {'url': 'http://fapi.fyn-tech.com:8000', 'description': 'Production API'},
+        {'url': 'http://api.fyn-tech.com:8000', 'description': 'Production API'},
     ],
     'TAGS': [
         {'name': 'Simulation', 'description': 'Simulation operations'},

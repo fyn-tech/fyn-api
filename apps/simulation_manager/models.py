@@ -3,8 +3,26 @@ from django.conf import settings
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.core.files.storage import default_storage as storage
+from django.utils.translation import gettext_lazy as _
+from enum import Enum
 import uuid
 import os
+
+
+class JobStatus(models.TextChoices):
+    QUEUED = "QD", _('QUEUED')
+    PREPARING = "PR" , _('PREPARING')
+    FETCHING_RESOURCES = "FR", _('FETCHING_RESOURCES')
+    STARTING = "ST", _('STARTING')
+    RUNNING = "RN", _('RUNNING')
+    PAUSED = "PD", _('PAUSED')
+    CLEANING_UP = "CU", _('CLEANING_UP')
+    UPLOADING_RESULTS = "UR", _('UPLOADING_RESULTS')
+    SUCCEEDED = "SD", _('SUCCEEDED')
+    FAILED = "FD", _('FAILED')
+    FAILED_RESOURCE_ERROR = "FS", _('FAILED_RESOURCE_ERROR')
+    FAILED_TERMINATED = "FM", _('FAILED_TERMINATED')
+    FAILED_TIMEOUT = "FO", _('FAILED_TIMEOUT')
 
 
 class Simulation(models.Model):
@@ -15,7 +33,7 @@ class Simulation(models.Model):
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now=True)
     created_by  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='simulations')
-    status      = models.IntegerField(default=0)
+    status      = models.CharField(default=JobStatus.QUEUED,max_length=2,choices=JobStatus.choices)
 
     # simulation data
     yaml_file = models.FileField(upload_to='yaml_files/')

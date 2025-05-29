@@ -15,96 +15,94 @@ from pathlib import Path
 import os
 import sys
 
-if os.path.exists('/var/app/current/env_vars'):
-    env_file = '/var/app/current/env_vars'
+if os.path.exists("/var/app/current/env_vars"):
+    env_file = "/var/app/current/env_vars"
 else:
-    env_file = '.env'
+    env_file = ".env"
 load_dotenv(env_file)
 
 # early project debugging output
 env_vars = dotenv_values(env_file)
 print(f"Env Vars: {env_vars}")
-print("Current ENVIRONMENT value:", os.getenv('ENVIRONMENT'))
+print("Current ENVIRONMENT value:", os.getenv("ENVIRONMENT"))
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR / 'apps'))
+sys.path.append(str(BASE_DIR / "apps"))
 
 # Core settings
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # Application definition
 INSTALLED_APPS = [
-    'daphne',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
+    "daphne",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Third party
-    'corsheaders',
-    'channels',
-    'drf_spectacular',
-    'rest_framework',
-
+    "corsheaders",
+    "channels",
+    "drf_spectacular",
+    "rest_framework",
     # Local App
-    'accounts',
-    'runner_manager',
-    'simulation_manager',
+    "accounts",
+    "runner_manager",
+    "job_manager",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'fyn-api.urls'
+ROOT_URLCONF = "fyn-api.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'fyn-api.wsgi.application'
-ASGI_APPLICATION = 'fyn-api.asgi.application'
+WSGI_APPLICATION = "fyn-api.wsgi.application"
+ASGI_APPLICATION = "fyn-api.asgi.application"
 
 # Database
-if os.getenv('ENVIRONMENT') == 'production':
+if os.getenv("ENVIRONMENT") == "production":
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('RDS_DB_NAME'),
-            'USER': os.getenv('RDS_USERNAME'),
-            'PASSWORD': os.getenv('RDS_PASSWORD'),
-            'HOST': os.getenv('RDS_HOSTNAME'),
-            'PORT': os.getenv('RDS_PORT'),
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("RDS_DB_NAME"),
+            "USER": os.getenv("RDS_USERNAME"),
+            "PASSWORD": os.getenv("RDS_PASSWORD"),
+            "HOST": os.getenv("RDS_HOSTNAME"),
+            "PORT": os.getenv("RDS_PORT"),
         }
     }
 else:  # Local development database
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
@@ -114,84 +112,84 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Fyn-Tech API',
-    'DESCRIPTION': 'Schema for the REST API of Fyn-Tech',
-    'VERSION': '0.0.1',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
-    'SERVERS': [
-        {'url': 'http://api.fyn-tech.com:8000', 'description': 'Production API'},
+    "TITLE": "Fyn-Tech API",
+    "DESCRIPTION": "Schema for the REST API of Fyn-Tech",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVERS": [
+        {"url": "http://api.fyn-tech.com:8000", "description": "Production API"},
     ],
-    'TAGS': [
-        {'name': 'Simulation', 'description': 'Simulation operations'},
+    "TAGS": [
+        {"name": "Simulation", "description": "Simulation operations"},
     ],
-    'EXTENSIONS_TO_SCHEMA_FUNCTION': lambda generator, request, public: {
-        'x-speakeasy-retries': {
-            'strategy': 'backoff',
-            'backoff': {
-                'initialInterval': 500,
-                'maxInterval': 60000,
-                'maxElapsedTime': 3600000,
-                'exponent': 1.5,
+    "EXTENSIONS_TO_SCHEMA_FUNCTION": lambda generator, request, public: {
+        "x-speakeasy-retries": {
+            "strategy": "backoff",
+            "backoff": {
+                "initialInterval": 500,
+                "maxInterval": 60000,
+                "maxElapsedTime": 3600000,
+                "exponent": 1.5,
             },
-            'statusCodes': ['5XX'],
-            'retryConnectionErrors': True,
+            "statusCodes": ["5XX"],
+            "retryConnectionErrors": True,
         }
-    }
+    },
 }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 
 # Internationalization
-LANGUAGE_CODE = 'en-gb'
-TIME_ZONE = 'Europe/Berlin'
+LANGUAGE_CODE = "en-gb"
+TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_TZ = True
 
 # Static files
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom user model
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = "accounts.User"
 
 # Security settings
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
-if os.getenv('EC2_IP'):
-    ALLOWED_HOSTS.append(os.getenv('EC2_IP'))
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+if os.getenv("EC2_IP"):
+    ALLOWED_HOSTS.append(os.getenv("EC2_IP"))
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
 
 # Cookie settings
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_DOMAIN = None if DEBUG else '.fyn-tech.com'
-CSRF_COOKIE_PATH = '/'
+CSRF_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
+CSRF_COOKIE_PATH = "/"
 CSRF_USE_SESSIONS = False
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 
-SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_DOMAIN = None if DEBUG else '.fyn-tech.com'
-SESSION_COOKIE_PATH = '/'
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
+SESSION_COOKIE_PATH = "/"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"

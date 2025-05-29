@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Simulation
+from .models import Job
 
-class SimulationSerializer(serializers.ModelSerializer):
+
+class JobSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Simulation
-        fields = ['id', 'name', 'created_at', 'updated_at', 'status']
-
+        model = Job
+        fields = ["id", "name", "created_at", "updated_at", "status"]

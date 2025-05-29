@@ -4,15 +4,15 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r"job_manager", views.SimulationViewSet)
+router.register(r"job_manager", views.JobViewSet)
 
 urlpatterns = [
     # General fyn-api
-    path("simulation_submission/", views.handle_simulation_submission_form),
+    path("job_submission/", views.handle_simulation_submission_form),
     # other app apis
     path("", include("accounts.urls")),
     # fyn-api admin api
-    path("job_manager/", views.simulation_manager, name="simulation_manager"),
+    path("job_manager/", views.simulation_manager, name="job_manager"),
     path(
         "job_manager/get_all_simulations/",
         views.get_all_simulations,

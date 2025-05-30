@@ -1,86 +1,10 @@
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from .models import Job
+from .models import JobInfo
 from accounts.models import User
 from django.forms import model_to_dict
 import yaml
-
-
-@login_required
-def handle_simulation_submission_form(request):
-    if request.method == "POST":
-
-        # Get the config file and the name from the request
-        yaml_file = request.FILES["yaml_file"]
-        name = request.POST["name"]
-
-        # Create the simulation object
-        simulation = Job.objects.create(
-            created_by=request.user, name=name, yaml_file=yaml_file
-        )
-
-        return JsonResponse({"message": "File received successfully"}, status=200)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-# -------------------------------------------------------------------------------------------------
-# Back End Requests
-# -------------------------------------------------------------------------------------------------
-
-
-def simulation_manager(request):
-    template = loader.get_template("simulation_manager.html")
-    return HttpResponse(template.render())
-
-
-def get_all_simulations(request):
-    all_simulations = Job.objects.all()
-    template = loader.get_template("get_all_simulations.html")
-    context = {
-        "all_simulations": all_simulations,
-    }
-    return HttpResponse(template.render(context, request))
-
-
-def get_simulation(request, id):
-    simulation = Job.objects.get(id=id)
-    simulation_dict = Job.objects.filter(id=id).values().first()
-
-    # the simulation_dict is necessary to print the simulation object in the template.
-    # In this way the we can loop through the dictionary and print the key value pairs and the output will always be accurate, even if the model changes.
-    # Perhaps there is a more efficient way to do this, but this is the best way I could think of.
-    # even for the frontend it can be useful to have the simulation_dict variable available.
-    with open(simulation.yaml_file.path, "r") as file:
-        yaml_content = yaml.safe_load(file)
-    template = loader.get_template("get_simulation.html")
-    context = {
-        "simulation": simulation,
-        "simulation_dict": simulation_dict,
-        "yaml_content": yaml_content,
-    }
-    return HttpResponse(template.render(context, request))
-
-
-def get_user_simulations(request, id):
-    # user_simulations = Simulation.objects.filter(user_id=id).values()
-    user = User.objects.get(id=id)
-    user_simulations = user.simulations.all()
-    template = loader.get_template("get_user_simulations.html")
-    context = {
-        "user_simulations": user_simulations,
-        "user": user,
-    }
-    return HttpResponse(template.render(context, request))
-
-
-def delete_simulation(request, id):
-    simulation = Job.objects.get(id=id)
-    simulation.delete()
-    return JsonResponse(
-        {"status": "success", "message": "Simulation deleted successfully"}, status=200
-    )
 
 
 from rest_framework import viewsets, status
@@ -88,13 +12,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # from .models import Simulation
-from .serializers import JobSerializer
+from .serializers import JobInfoSerializer
 
 
-class JobViewSet(viewsets.ModelViewSet):
+class JobInfoViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows simulations to be viewed or edited.
     """
 
-    queryset = Job.objects.all()
-    serializer_class = JobSerializer
+    queryset = JobInfo.objects.all()
+    serializer_class = JobInfoSerializer

@@ -24,7 +24,7 @@ class JobStatus(models.TextChoices):
     FAILED_TIMEOUT = "FO", _("FAILED_TIMEOUT")
 
 
-class Job(models.Model):
+class JobInfo(models.Model):
 
     # meta data
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -36,6 +36,12 @@ class Job(models.Model):
     )
     status = models.CharField(
         default=JobStatus.QUEUED, max_length=2, choices=JobStatus.choices
+    )
+    assigned_runner = models.ForeignKey(
+        "runner_manager.RunnerInfo",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
 
     # simulation data
@@ -51,7 +57,7 @@ def rename_yaml_file(instance, filename):
     return os.path.join("yaml_files", filename)
 
 
-@receiver(pre_save, sender=Job)
+@receiver(pre_save, sender=JobInfo)
 def update_filename(sender, instance, **kwargs):
     if instance.pk:
         initial_path = instance.yaml_file.path

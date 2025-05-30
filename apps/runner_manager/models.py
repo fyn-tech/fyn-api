@@ -5,30 +5,26 @@ from enum import Enum
 
 
 class Status(Enum):
-    IDLE = 'idle'
-    BUSY = 'busy'
-    OFFLINE = 'offline'
-    UNREGISTERED = 'unregistered'
+    IDLE = "idle"
+    BUSY = "busy"
+    OFFLINE = "offline"
+    UNREGISTERED = "unregistered"
 
 
-STATUS_CHOICES = [
-    (status.value, status.name.title())
-    for status in Status
-]
+STATUS_CHOICES = [(status.value, status.name.title()) for status in Status]
 
 
 class RunnerInfo(models.Model):
 
     # meta data
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    token = models.CharField(
-        max_length=100, blank=False, null=False, default="")
-    active_jobs = models.JSONField(default=list)
+    token = models.CharField(max_length=100, blank=False, null=False, default="")
     state = models.CharField(
-        max_length=20, choices=STATUS_CHOICES,
-        default=Status.UNREGISTERED.value)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              on_delete=models.CASCADE, related_name='runner')
+        max_length=20, choices=STATUS_CHOICES, default=Status.UNREGISTERED.value
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="runner"
+    )
     last_contact = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
@@ -37,14 +33,15 @@ class RunnerInfo(models.Model):
 
 class SystemInfo(models.Model):
     """
-    Note: Units are base units, so Bytes no GB or MB. Conversions can be done 
+    Note: Units are base units, so Bytes no GB or MB. Conversions can be done
     in the client depending on need.
     """
 
     # Iding
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     runner = models.ForeignKey(
-        RunnerInfo, on_delete=models.CASCADE, related_name='system')
+        RunnerInfo, on_delete=models.CASCADE, related_name="system"
+    )
 
     # OS
     system_name = models.CharField(max_length=100, null=True)
@@ -80,31 +77,31 @@ class SystemInfo(models.Model):
 
     def to_json(self):
         return {
-            'id': self.id,
-            'runner_id': self.runner.id,
-            'system_name': self.system_name,
-            'system_release': self.system_release,
-            'system_version': self.system_version,
-            'system_architecture': self.system_architecture,
-            'cpu_model': self.cpu_model,
-            'cpu_clock_speed_advertised': self.cpu_clock_speed,
-            'cpu_clock_speed_actual': self.cpu_clock_speed_actual,
-            'cpu_logical_cores': self.cpu_logical_cores,
-            'cpu_physical_cores': self.cpu_physical_cores,
-            'cpu_cache_l1_size': self.cpu_cache_l1_size,
-            'cpu_cache_l2_size': self.cpu_cache_l2_size,
-            'cpu_cache_l3_size': self.cpu_cache_l3_size,
-            'ram_size_total': self.ram_size_total,
-            'disk_size_total': self.disk_size_total,
-            'disk_size_available': self.disk_size_available,
-            'gpu_vendor': self.gpu_vendor,
-            'gpu_model': self.gpu_model,
-            'gpu_memory_size': self.gpu_memory_size,
-            'gpu_clock_speed': self.gpu_clock_speed,
-            'gpu_compute_units': self.gpu_compute_units,
-            'gpu_core_count': self.gpu_core_count,
-            'gpu_driver_version': self.gpu_driver_version
+            "id": self.id,
+            "runner_id": self.runner.id,
+            "system_name": self.system_name,
+            "system_release": self.system_release,
+            "system_version": self.system_version,
+            "system_architecture": self.system_architecture,
+            "cpu_model": self.cpu_model,
+            "cpu_clock_speed_advertised": self.cpu_clock_speed,
+            "cpu_clock_speed_actual": self.cpu_clock_speed_actual,
+            "cpu_logical_cores": self.cpu_logical_cores,
+            "cpu_physical_cores": self.cpu_physical_cores,
+            "cpu_cache_l1_size": self.cpu_cache_l1_size,
+            "cpu_cache_l2_size": self.cpu_cache_l2_size,
+            "cpu_cache_l3_size": self.cpu_cache_l3_size,
+            "ram_size_total": self.ram_size_total,
+            "disk_size_total": self.disk_size_total,
+            "disk_size_available": self.disk_size_available,
+            "gpu_vendor": self.gpu_vendor,
+            "gpu_model": self.gpu_model,
+            "gpu_memory_size": self.gpu_memory_size,
+            "gpu_clock_speed": self.gpu_clock_speed,
+            "gpu_compute_units": self.gpu_compute_units,
+            "gpu_core_count": self.gpu_core_count,
+            "gpu_driver_version": self.gpu_driver_version,
         }
 
     def __str__(self):
-        return (f"System {self.id} - Runner: {self.runner}")
+        return f"System {self.id} - Runner: {self.runner}"

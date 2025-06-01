@@ -4,14 +4,11 @@ import uuid
 from enum import Enum
 
 
-class Status(Enum):
-    IDLE = "idle"
-    BUSY = "busy"
-    OFFLINE = "offline"
-    UNREGISTERED = "unregistered"
-
-
-STATUS_CHOICES = [(status.value, status.name.title()) for status in Status]
+class RunnerStatus(models.TextChoices):
+    IDLE = "ID", ("IDLE")
+    BUSY = "BS", ("BUSY")
+    OFFLINE = "OF", ("OFFLINE")
+    UNREGISTERED = "UR", ("UNREGISTERED")
 
 
 class RunnerInfo(models.Model):
@@ -20,15 +17,21 @@ class RunnerInfo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     token = models.CharField(max_length=100, blank=False, null=False, default="")
     state = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=Status.UNREGISTERED.value
+        max_length=20,
+        default=RunnerStatus.UNREGISTERED.value,
+        choices=RunnerStatus.choices,
     )
     owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="runner"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="runner_1"
     )
+    created_at = models.DateTimeField(auto_now_add=True)
     last_contact = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Runner {self.id} - Owner: {self.owner} - State: {self.state}"
+
+
+# ---------------------------------------------------------------------------------
 
 
 class SystemInfo(models.Model):

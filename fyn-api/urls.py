@@ -17,15 +17,30 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from . import views
 
 
 urlpatterns = [
     path("", views.home, name="home"),
     path("admin/", admin.site.urls),
-    path("get_csrf_token/", views.get_csrf_token, name="get_csrf_token"),
     path("accounts/", include("accounts.urls")),
+    path("get_csrf_token/", views.get_csrf_token, name="get_csrf_token"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
+    path(
+        "schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("", include("runner_manager.urls")),
     path("", include("job_manager.urls")),
 ]

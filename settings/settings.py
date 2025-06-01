@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "channels",
     "drf_spectacular",
     "rest_framework",
+    "rest_framework.authtoken",
     # Local App
     "accounts",
     "runner_manager",
@@ -109,6 +110,11 @@ else:  # Local development database
 # Schema Generation
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "runner_manager.authentication.RunnerTokenAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
 }
 
 SPECTACULAR_SETTINGS = {

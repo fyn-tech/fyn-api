@@ -107,59 +107,8 @@ else:  # Local development database
         }
     }
 
-# Schema Generation
-REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "runner_manager.authentication.RunnerTokenAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
-}
-
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Fyn-Tech API",
-    "DESCRIPTION": "Schema for the REST API of Fyn-Tech",
-    "VERSION": "0.0.1",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "COMPONENT_SPLIT_REQUEST": True,
-    "SERVERS": [
-        {"url": "http://api.fyn-tech.com:8000", "description": "Production API"},
-    ],
-    "TAGS": [
-        {"name": "Simulation", "description": "Simulation operations"},
-    ],
-    "EXTENSIONS_TO_SCHEMA_FUNCTION": lambda generator, request, public: {
-        "x-speakeasy-retries": {
-            "strategy": "backoff",
-            "backoff": {
-                "initialInterval": 500,
-                "maxInterval": 60000,
-                "maxElapsedTime": 3600000,
-                "exponent": 1.5,
-            },
-            "statusCodes": ["5XX"],
-            "retryConnectionErrors": True,
-        }
-    },
-}
-
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
+# REST settings Generation
+from settings.settings_rest import *
 
 # Internationalization
 LANGUAGE_CODE = "en-gb"
@@ -178,24 +127,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 # Security settings
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
-if os.getenv("EC2_IP"):
-    ALLOWED_HOSTS.append(os.getenv("EC2_IP"))
-
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
-
-# Cookie settings
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
-CSRF_COOKIE_PATH = "/"
-CSRF_USE_SESSIONS = False
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
-
-SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
-SESSION_COOKIE_PATH = "/"
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
+from settings.settings_security import *

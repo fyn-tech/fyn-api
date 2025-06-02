@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.core.files.storage import default_storage as storage
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 import uuid
 import os
@@ -29,6 +30,9 @@ class JobInfo(models.Model):
     # meta data
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, blank=False, null=False, default="job")
+    priority = models.IntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

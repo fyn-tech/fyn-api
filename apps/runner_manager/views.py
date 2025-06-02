@@ -29,10 +29,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import serializers
 from .authentication import RunnerTokenAuthentication
 from .permissions import IsAuthenticatedRunner
-from job_manager.models import JobInfo
 
 # from .models import Simulation
 from .serializers import RunnerInfoSerializer
@@ -47,12 +45,6 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
     serializer_class = RunnerInfoSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly]
-
-
-class JobIDListResponse(serializers.Serializer):
-    """Simple response for job UUID list"""
-
-    job_ids = serializers.ListField(child=serializers.UUIDField())
 
 
 class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
@@ -98,25 +90,6 @@ class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
             },
             status=405,
         )
-
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path="jobs",
-        serializer_class=JobIDListResponse,
-    )
-    def jobs(self, request):
-        """Get all job UUIDs assigned to the authenticated runner"""
-        try:
-            runner = RunnerInfo.objects.get(owner=request.user)
-        except RunnerInfo.DoesNotExist:
-            raise NotFound("No runner found for this user")
-
-        job_ids = JobInfo.objects.filter(assigned_runner=runner).values_list(
-            "id", flat=True
-        )
-        return Response({"job_ids": list(job_ids)})
-
 
 # -----------------------------------------------------------------------------
 # Front End API

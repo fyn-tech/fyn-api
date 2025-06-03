@@ -23,6 +23,7 @@ class JobStatus(models.TextChoices):
     FAILED_RESOURCE_ERROR = "FS", _("FAILED_RESOURCE_ERROR")
     FAILED_TERMINATED = "FM", _("FAILED_TERMINATED")
     FAILED_TIMEOUT = "FO", _("FAILED_TIMEOUT")
+    FAILED_RUNNER_EXCEPTION = "FE", _("FAILED_RUNNER_EXCEPTION")
 
 
 class JobInfo(models.Model):

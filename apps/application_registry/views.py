@@ -10,3 +10,25 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
+
+from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import (
+    IsAuthenticated,
+    DjangoModelPermissionsOrAnonReadOnly,
+)
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import AppSerializer
+from .models import AppInfo
+
+
+class AppRegViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows runners to be viewed or edited.
+    """
+
+    queryset = AppInfo.objects.all()
+    serializer_class = AppSerializer
+    authentication_classes = [SessionAuthentication] 
+    permission_classes = [IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly] # Do I need

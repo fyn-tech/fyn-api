@@ -10,3 +10,15 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
+
+from rest_framework import serializers
+from .models import AppInfo
+
+
+class AppSerializer(serializers.ModelSerializer):
+    created_by = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = AppInfo
+        fields = []
+        read_only_fields = []

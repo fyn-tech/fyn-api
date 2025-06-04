@@ -11,17 +11,8 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from django.urls import include, path
-from runner_manager import views
-from rest_framework.routers import DefaultRouter
+from django.db import models
 
-router = DefaultRouter()
-router.register(
-    r"application_registry/",
-    views.RunnerManagerUserViewSet,
-    basename="application_registry",
-)
 
-urlpatterns = [
-    path("", include(router.urls)),
-]
+class AppInfo(models.Model):
+    pass

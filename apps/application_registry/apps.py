@@ -10,3 +10,10 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
+
+from django.apps import AppConfig
+
+
+class ApplicationRegistryConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "application_registry"

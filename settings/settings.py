@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     # Local App
     "accounts",
+    "application_registry",
     "runner_manager",
     "job_manager",
 ]

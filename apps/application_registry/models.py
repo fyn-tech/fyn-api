@@ -12,7 +12,17 @@
 #  see <https://www.gnu.org/licenses/>.
 
 from django.db import models
-
+import uuid
 
 class AppInfo(models.Model):
-    pass
+    
+    id = models.UUIDField(primary_key=True, 
+                          default=uuid.uuid4, 
+                          editable=False,
+                          help_text="Unique identification number")
+    name = models.CharField(max_length=100,
+                            blank=False, 
+                            null=False, 
+                            default="job", 
+                            help_text="User provided name for the job")
+    file_path = models.FileField(upload_to="yaml_files/")

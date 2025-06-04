@@ -12,13 +12,13 @@
 #  see <https://www.gnu.org/licenses/>.
 
 from django.urls import include, path
-from runner_manager import views
+from application_registry import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(
     r"application_registry/",
-    views.RunnerManagerUserViewSet,
+    views.AppRegViewSet,
     basename="application_registry",
 )
 

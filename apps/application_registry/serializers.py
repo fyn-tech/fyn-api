@@ -16,9 +16,9 @@ from .models import AppInfo
 
 
 class AppSerializer(serializers.ModelSerializer):
-    created_by = serializers.StringRelatedField(read_only=True)
+    created_by = serializers.StringRelatedField()
 
     class Meta:
         model = AppInfo
-        fields = []
-        read_only_fields = []
+        fields = ["id", "name", "file_path"]
+        read_only_fields = ["id", "name", "file_path"]

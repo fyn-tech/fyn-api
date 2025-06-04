@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 import uuid
 import os
-
+from application_registry.models import AppInfo
 
 class JobStatus(models.TextChoices):
     QUEUED = "QD", _("QUEUED")
@@ -69,8 +69,15 @@ class JobInfo(models.Model):
         blank=True,
     )
     executable = models.CharField(
+        default="",
         max_length=500,
         help_text="Path to executable or command name"
+    )
+    application_id = models.ForeignKey(
+        AppInfo, 
+        on_delete=models.CASCADE,
+        null=True,
+        help_text="The application id this job will execute"
     )
     command_line_args = models.JSONField(
         default=list,

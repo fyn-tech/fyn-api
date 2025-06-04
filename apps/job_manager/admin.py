@@ -9,7 +9,6 @@ class JobAdmin(admin.ModelAdmin):
         "name",
         "status",
         "assigned_runner",
-        "created_by",
         "created_at",
         "updated_at",
     )
@@ -21,11 +20,18 @@ class JobAdmin(admin.ModelAdmin):
         "updated_at",
     )
     search_fields = ("name", "id", "assigned_runner", "created_by__username")
-    readonly_fields = ("id", "created_at", "updated_at")
+    readonly_fields = (
+        "id",
+        "created_by",
+        "created_at",
+        "updated_at",
+        "working_directory")
 
     fieldsets = (
         ("Basic Information", {"fields": ("id", "name", "status", "assigned_runner")}),
-        ("File", {"fields": ("yaml_file",)}),
+        ("Execution Information", {"fields": ("executable", "application_id", "command_line_args", 
+                                              "working_directory")}),
+        ("Input Files", {"fields": ("yaml_file",)}),
         (
             "Metadata",
             {

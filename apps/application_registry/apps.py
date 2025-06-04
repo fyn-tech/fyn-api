@@ -12,8 +12,41 @@
 #  see <https://www.gnu.org/licenses/>.
 
 from django.apps import AppConfig
-
+from django.conf import settings
 
 class ApplicationRegistryConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "application_registry"
+
+    def ready(self):
+        self.bootstrap_default_programs()
+    
+    def bootstrap_default_programs(self):
+        """Check (and add if required) the standard test program. """
+        from django.contrib.staticfiles import finders
+        from django.db import connection
+        from .models import AppInfo
+        
+        # Return if we entre before table creation.
+        table_names = connection.introspection.table_names()        
+        if 'application_registry_appinfo' not in table_names:
+            print("AppInfo table doesn't exist yet - skipping bootstrap")
+            return
+    
+        # Check programs exist
+        path = settings.BASE_DIR / (
+                "apps/application_registry/static/application_registry/default_packages/"
+                "test_program.py"
+                )
+        if not AppInfo.objects.filter(name="test_program").exists():
+            if path.exists():
+                AppInfo.objects.create(name="test_program", file_path=str(path))
+                print("Found test_program, adding to application registry.")
+            else:
+                print("Warning: cannot find test_program.py or it is not a file, "
+                        "skipping default database injection.")
+        else: 
+            if not path.exists():
+                test_program_app = AppInfo.objects.filter(name="test_program")
+                test_program_app.delete()
+                print("Found test_program but not the file test_program.py, removed test_program.")

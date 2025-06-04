@@ -17,4 +17,13 @@ from .models import AppInfo
 
 @admin.register(AppInfo)
 class AppRegAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "id",
+        "name",
+        "file_path",
+    )
+
+    readonly_fields = (
+        "id",
+        "name",
+    )

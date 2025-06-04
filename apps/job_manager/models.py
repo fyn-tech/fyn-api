@@ -28,28 +28,63 @@ class JobStatus(models.TextChoices):
 
 class JobInfo(models.Model):
 
-    # meta data
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, blank=False, null=False, default="job")
+    # Meta data
+    id = models.UUIDField(primary_key=True, 
+                          default=uuid.uuid4, 
+                          editable=False,
+                          help_text="Unique job identification number")
+    name = models.CharField(max_length=100,
+                            blank=False, 
+                            null=False, 
+                            default="job", 
+                            help_text="User provided name for the job")
     priority = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
+        default=0, 
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Queueing priority, will determine position in remote runner's queue."
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, 
+                                      editable=False,
+                                      help_text="Creation date of the job.")
+    updated_at = models.DateTimeField(auto_now=True, help_text="Date of last update.")
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="job"
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name="job", 
+        editable=False,
+        help_text="User who created the job."
     )
     status = models.CharField(
-        default=JobStatus.QUEUED, max_length=2, choices=JobStatus.choices
+        default=JobStatus.QUEUED, 
+        max_length=2, 
+        choices=JobStatus.choices,
+        help_text="Current status of the job."
     )
+
+    # Job Execution Resources
     assigned_runner = models.ForeignKey(
         "runner_manager.RunnerInfo",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
+    executable = models.CharField(
+        max_length=500,
+        help_text="Path to executable or command name"
+    )
+    command_line_args = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of command line arguments"
+    )    
+    working_directory = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Working directory (on the remote runner) for job execution"
+    )
 
-    # simulation data
+    # Simulation Inputs
     yaml_file = models.FileField(upload_to="yaml_files/")
 
     def __str__(self):

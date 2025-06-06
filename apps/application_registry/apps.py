@@ -26,6 +26,10 @@ class ApplicationRegistryConfig(AppConfig):
         from django.contrib.staticfiles import finders
         from django.db import connection
         from .models import AppInfo
+
+        print("\033[93m" + "="*80)
+        print("FIXME: This need to be added to boot-strapping and migration, is a quick fix.")
+        
         
         # Return if we entre before table creation.
         table_names = connection.introspection.table_names()        
@@ -50,3 +54,5 @@ class ApplicationRegistryConfig(AppConfig):
                 test_program_app = AppInfo.objects.filter(name="test_program")
                 test_program_app.delete()
                 print("Found test_program but not the file test_program.py, removed test_program.")
+
+        print("="*80 + "\033[0m")

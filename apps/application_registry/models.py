@@ -14,6 +14,14 @@
 from django.db import models
 import uuid
 
+class AppType(models.TextChoices):
+    UNKNOWN = "unknown", "unknown" 
+    PYTHON_SCRIPT = 'python', 'Python Script'
+    LINUX_BINARY = 'linux_binary', 'Linux Binary'
+    WINDOWS_BINARY = 'windows_binary', 'Windows Binary'
+    SHELL_SCRIPT = 'shell', 'Shell Script'
+
+
 class AppInfo(models.Model):
     
     id = models.UUIDField(primary_key=True, 
@@ -24,5 +32,24 @@ class AppInfo(models.Model):
                             blank=False, 
                             null=False, 
                             default="job", 
-                            help_text="User provided name for the job")
+                            help_text="User provided name for the application")
     file_path = models.FileField(upload_to="yaml_files/")
+
+    type = models.CharField(
+        default=AppType.UNKNOWN,
+        max_length=20,
+        choices=AppType.choices,
+        help_text="Type of application program"
+    )
+    
+    @property
+    def content_type(self):
+        """Return appropriate content type based on app_type."""
+        content_type_map = {
+            AppType.UNKNOWN: 'application/octet-stream',
+            AppType.PYTHON_SCRIPT: 'text/x-python',
+            AppType.SHELL_SCRIPT: 'text/x-shellscript',
+            AppType.LINUX_BINARY: 'application/octet-stream',
+            AppType.WINDOWS_BINARY: 'application/octet-stream',
+        }
+        return content_type_map.get(self.type, 'application/octet-stream')

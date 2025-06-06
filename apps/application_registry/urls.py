@@ -17,7 +17,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(
-    r"application_registry/",
+    r"application_registry",
     views.AppRegViewSet,
     basename="application_registry",
 )

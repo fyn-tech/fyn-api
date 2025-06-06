@@ -31,9 +31,10 @@ class JobInfoRunnerSerializer(serializers.ModelSerializer):
             "priority",
             "created_at",
             "updated_at",
+            "created_by",
             "status",
             "assigned_runner",
-            "created_by",
+            "application_id"
         ]
-        read_only_fields = ["id", "name", "priority", "created_at", "updated_at", "assigned_runner",
-                            "created_by"]
+        read_only_fields = ["id", "name", "priority", "created_at", "updated_at", "created_by",
+                            "assigned_runner", "application_id"]

@@ -20,6 +20,7 @@ class AppRegAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
+        "type",
         "file_path",
     )
 
@@ -27,3 +28,6 @@ class AppRegAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
+    
+    list_filter = ("type",)
+    search_fields = ("name",)

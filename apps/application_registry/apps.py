@@ -23,9 +23,8 @@ class ApplicationRegistryConfig(AppConfig):
     
     def bootstrap_default_programs(self):
         """Check (and add if required) the standard test program. """
-        from django.contrib.staticfiles import finders
         from django.db import connection
-        from .models import AppInfo
+        from .models import AppInfo, AppType
 
         print("\033[93m" + "="*80)
         print("FIXME: This need to be added to boot-strapping and migration, is a quick fix.")
@@ -44,7 +43,8 @@ class ApplicationRegistryConfig(AppConfig):
                 )
         if not AppInfo.objects.filter(name="test_program").exists():
             if path.exists():
-                AppInfo.objects.create(name="test_program", file_path=str(path))
+                AppInfo.objects.create(name="test_program", type=AppType.PYTHON_SCRIPT,
+                                       file_path=str(path))
                 print("Found test_program, adding to application registry.")
             else:
                 print("Warning: cannot find test_program.py or it is not a file, "

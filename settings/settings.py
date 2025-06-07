@@ -111,6 +111,9 @@ else:  # Local development database
 # REST settings Generation
 from settings.settings_rest import *
 
+# File Storage Settings
+from settings.settings_storage import *
+
 # Internationalization
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/Berlin"

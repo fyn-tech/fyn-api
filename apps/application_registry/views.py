@@ -65,11 +65,8 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
             with open(file_path, 'rb') as file:
                 content = file.read()
             
-            # Use the content_type property to get proper MIME type
-            content_type = app_info.content_type
-            
             # Create response with appropriate headers
-            response = HttpResponse(content, content_type=content_type)
+            response = HttpResponse(content, content_type=app_info.content_type)
             response['Content-Disposition'] = f'attachment; filename="{app_info.name}"'
             
             return response

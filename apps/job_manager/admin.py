@@ -1,44 +1,30 @@
 from django.contrib import admin
-from .models import JobStatus, JobInfo
+from .models import JobStatus, JobInfo, JobResource
 
 
 @admin.register(JobInfo)
 class JobAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "name",
-        "status",
-        "assigned_runner",
-        "created_at",
-        "updated_at",
-    )
-    list_filter = (
-        "status",
-        "assigned_runner",
-        "created_by",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = ("name", "id", "assigned_runner", "created_by__username")
-    readonly_fields = (
-        "id",
-        "created_by",
-        "created_at",
-        "updated_at",
-        "working_directory")
-
+    list_display = ('id', 'name', 'created_by', 'status', 'created_at', 'resource_count')
+    list_filter = ('status', 'created_at', 'application_id')
+    search_fields = ('name', 'id', 'created_by__username')
+    readonly_fields = ('id', 'created_at', 'created_by', 'updated_at', 'local_working_directory', 
+                       'resource_summary_display')
+    
     fieldsets = (
-        ("Basic Information", {"fields": ("id", "name", "status", "assigned_runner")}),
-        ("Execution Information", {"fields": ("executable", "application_id", "command_line_args", 
-                                              "working_directory")}),
-        ("Input Files", {"fields": ("yaml_file",)}),
-        (
-            "Metadata",
-            {
-                "fields": ("created_by", "created_at", "updated_at"),
-                "classes": ("collapse",),
-            },
-        ),
+        ('Basic Info', {
+            'fields': ('id', 'name', 'priority', 'status', 'created_by')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+        ('Execution', {
+            'fields': ('application_id', 'executable', 'command_line_args', 'working_directory', 
+                       'assigned_runner')
+        }),
+        ('Storage', {
+            'fields': ('local_working_directory', 'resource_summary_display'),
+        }),
     )
 
     # Custom actions
@@ -61,6 +47,19 @@ class JobAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} jobs marked as succeeded.")
 
     mark_as_succeeded.short_description = "Mark selected jobs as succeeded"
+    
+    def resource_count(self, obj):
+        return obj.resources.count()
+    
+    resource_count.short_description = 'Total Resources'
+
+    def resource_summary_display(self, obj):
+        summary = obj.resource_summary
+        if summary:
+            return ', '.join([f"{k}: {v}" for k, v in summary.items()])
+        return 'No resources'
+    
+    resource_summary_display.short_description = 'Resources Summary'
 
     # Override to set created_by automatically
     def save_model(self, request, obj, form, change):
@@ -90,3 +89,22 @@ class JobAdmin(admin.ModelAdmin):
         if obj and obj.created_by == request.user:
             return True
         return False
+    
+
+@admin.register(JobResource)
+class JobResourceAdmin(admin.ModelAdmin):
+    list_display = ('filename', 'job', 'resource_type', 'created_at', 'created_by', 'file_location')
+    list_filter = ('resource_type', 'created_at', 'job__status')
+    search_fields = ('job__name', 'description')
+    fields = ('job', 'resource_type', 'file', 'description', 'created_by')
+    readonly_fields = ('full_path_display',)
+    
+    def file_location(self, obj):
+        """Show where the file is actually stored"""
+        return obj.full_file_path
+    file_location.short_description = 'File Location'
+    
+    def full_path_display(self, obj):
+        """Display full path in the form"""
+        return obj.full_file_path
+    full_path_display.short_description = 'Full File Path'

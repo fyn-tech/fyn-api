@@ -33,7 +33,10 @@ class AppInfo(models.Model):
                             null=False, 
                             default="job", 
                             help_text="User provided name for the application")
-    file_path = models.FileField(upload_to="yaml_files/")
+    file_path = models.CharField(
+        max_length=500,
+        help_text="Full path to the application file"
+    )
 
     type = models.CharField(
         default=AppType.UNKNOWN,

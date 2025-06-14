@@ -197,7 +197,7 @@ class JobResource(models.Model):
     )
     file = models.FileField(
         upload_to=job_resource_upload_path,
-        storage=preserve_storage,  # <- ADD THIS LINE
+        storage=preserve_storage, 
         help_text="The actual file/resource"
     )
     description = models.CharField(

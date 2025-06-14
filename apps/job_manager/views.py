@@ -62,29 +62,75 @@ class JobResourceViewSet(viewsets.ModelViewSet):
     queryset = JobResource.objects.all()
     serializer_class = JobResourceSerializer
 
-
+import os
+import mimetypes
+from django.http import FileResponse, Http404
+from rest_framework.decorators import action
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 class JobResourceRunnerViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for runners to access resources for their assigned jobs.
-    """
     serializer_class = JobResourceRunnerSerializer
     authentication_classes = [RunnerTokenAuthentication]
     permission_classes = [IsAuthenticatedRunner]
     
     def get_queryset(self):
-        """Runner can only access resources for jobs assigned to them"""
         if hasattr(self.request, 'user') and hasattr(self.request.user, '_runner_info'):
-            return JobResource.objects.filter(job__assigned_runner=self.request.user._runner_info)
+            queryset = JobResource.objects.filter(job__assigned_runner=self.request.user._runner_info)
+            
+            # Filter by query params
+            job_id = self.request.query_params.get('job_id')
+            if job_id:
+                queryset = queryset.filter(job__id=job_id)
+            
+            resource_type = self.request.query_params.get('resource_type')
+            if resource_type:
+                queryset = queryset.filter(resource_type=resource_type)
+            
+            filename = self.request.query_params.get('filename')
+            if filename:
+                queryset = queryset.filter(file__icontains=filename)
+            
+            return queryset
         return JobResource.objects.none()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('job_id', OpenApiTypes.UUID, description='Filter by job ID'),
+            OpenApiParameter('resource_type', OpenApiTypes.STR, description='Filter by resource type'),
+            OpenApiParameter('filename', OpenApiTypes.STR, description='Filter by filename'),
+        ],
+        description='List resources for assigned jobs with optional filters'
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
-        """Runners cannot modify existing resources"""
-        return Response({"detail": "Runners cannot modify existing resources."}, status=405)
+        return Response({"detail": "Runners cannot modify resources."}, status=405)
     
     def partial_update(self, request, *args, **kwargs):
-        """Runners cannot modify existing resources"""
-        return Response({"detail": "Runners cannot modify existing resources."}, status=405)
+        return Response({"detail": "Runners cannot modify resources."}, status=405)
     
     def destroy(self, request, *args, **kwargs):
-        """Runners cannot delete resources"""
         return Response({"detail": "Runners cannot delete resources."}, status=405)
+    
+    @extend_schema(
+        responses={200: OpenApiTypes.BINARY},
+        description='Download resource file'
+    )
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None):
+        resource = self.get_object()
+        
+        if not resource.file or not os.path.exists(resource.file.path):
+            raise Http404("File not found")
+        
+        content_type, _ = mimetypes.guess_type(resource.file.path)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        
+        return FileResponse(
+            open(resource.file.path, 'rb'),
+            content_type=content_type,
+            as_attachment=True,
+            filename=resource.filename
+        )

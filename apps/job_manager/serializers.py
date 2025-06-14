@@ -63,14 +63,24 @@ class JobResourceSerializer(serializers.ModelSerializer):
 
 class JobResourceRunnerSerializer(serializers.ModelSerializer):
     """For runners - minimal read/upload only"""
+    download_url = serializers.SerializerMethodField()
     
     class Meta:
         model = JobResource
         fields = [
+            "id",
             "job",
             "resource_type",
             "file",
             "filename", 
             "file_url",
+            "download_url",
         ]
-        read_only_fields = ["filename", "file_url"]
+        read_only_fields = ["id", "filename", "file_url", "download_url"]
+    
+    def get_download_url(self, obj):
+        """Generate download URL for this resource"""
+        request = self.context.get('request')
+        if request and obj.id:
+            return request.build_absolute_uri(f'/api/job_manager/resources/runner/{obj.id}/download/')
+        return None

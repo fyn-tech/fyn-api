@@ -35,10 +35,15 @@ class JobInfoRunnerSerializer(serializers.ModelSerializer):
             "status",
             "assigned_runner",
             "application_id",
-            "resources"
+            "executable",
+            "command_line_args",
+            "resources",
+            "working_directory"            
         ]
-        read_only_fields = ["id", "name", "priority", "created_at", "updated_at", "created_by",
-                            "assigned_runner", "application_id", "resources"]
+        read_only_fields = ["id", "name", "priority", "created_at",
+                            "updated_at", "created_by", "assigned_runner",
+                            "application_id", "executable", 
+                            "command_line_args", "resources"]
         
 
 class JobResourceSerializer(serializers.ModelSerializer):

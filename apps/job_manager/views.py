@@ -36,14 +36,17 @@ class JobInfoRunnerViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         """Runners can only update status field"""
-        if set(request.data.keys()) - {'status'}:
-            return Response({"detail": "Runners can only update the 'status' field."}, status=400)
+        if set(request.data.keys()) - {'status', 'working_directory'}:
+            return Response({"detail": "Runners can only update the 'status' "
+                             "or 'working_directory'  fields."}, status=400)
         return super().update(request, *args, **kwargs)
     
     def partial_update(self, request, *args, **kwargs):
         """Runners can only update status field"""
-        if set(request.data.keys()) - {'status'}:
-            return Response({"detail": "Runners can only update the 'status' field."}, status=400)
+        if set(request.data.keys()) - {'status', 'working_directory'}:
+            return Response({"detail": "Runners can only update the 'status' "
+                             "or 'working_directory' fields."},
+                            status=400)
         return super().partial_update(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs):

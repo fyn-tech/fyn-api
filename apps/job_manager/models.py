@@ -65,16 +65,16 @@ class JobInfo(models.Model):
         null=True,
         blank=True,
     )
-    executable = models.CharField(
-        default="",
-        max_length=500,
-        help_text="Path to executable or command name"
-    )
     application_id = models.ForeignKey(
         AppInfo, 
         on_delete=models.CASCADE,
         null=True,
         help_text="The application id this job will execute"
+    )
+    executable = models.CharField(
+        default="",
+        max_length=500,
+        help_text="Path to executable or command name"
     )
     command_line_args = models.JSONField(
         default=list,

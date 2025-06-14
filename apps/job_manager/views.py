@@ -28,6 +28,7 @@ class JobInfoRunnerViewSet(viewsets.ModelViewSet):
     authentication_classes = [RunnerTokenAuthentication]
     permission_classes = [IsAuthenticatedRunner]
     
+    _edit_set = {'status', 'working_directory', 'exit_code'}
     def get_queryset(self):
         """Runner can only access jobs assigned to them"""
         if hasattr(self.request, 'user') and hasattr(self.request.user, '_runner_info'):
@@ -36,17 +37,16 @@ class JobInfoRunnerViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         """Runners can only update status field"""
-        if set(request.data.keys()) - {'status', 'working_directory'}:
-            return Response({"detail": "Runners can only update the 'status' "
-                             "or 'working_directory'  fields."}, status=400)
+        if set(request.data.keys()) - self._edit_set:
+            return Response({"detail":"Runners can only update "
+                             f"{self._edit_set}  fields."}, status=400)
         return super().update(request, *args, **kwargs)
     
     def partial_update(self, request, *args, **kwargs):
         """Runners can only update status field"""
-        if set(request.data.keys()) - {'status', 'working_directory'}:
-            return Response({"detail": "Runners can only update the 'status' "
-                             "or 'working_directory' fields."},
-                            status=400)
+        if set(request.data.keys()) - self._edit_set:
+            return Response({"detail":"Runners can only update "
+                             f"{self._edit_set}  fields."}, status=400)
         return super().partial_update(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs):

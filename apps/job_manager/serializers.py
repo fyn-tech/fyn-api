@@ -38,7 +38,8 @@ class JobInfoRunnerSerializer(serializers.ModelSerializer):
             "executable",
             "command_line_args",
             "resources",
-            "working_directory"            
+            "working_directory",
+            "exit_code"       
         ]
         read_only_fields = ["id", "name", "priority", "created_at",
                             "updated_at", "created_by", "assigned_runner",

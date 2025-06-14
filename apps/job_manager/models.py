@@ -96,6 +96,14 @@ class JobInfo(models.Model):
         help_text="Local working directory path for this job"
     )
 
+    # Job results/outputs
+    exit_code = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text="The exit code of the application which was executed."
+    )
+
+
     def save(self, *args, **kwargs):
         # Auto-generate local working directory path
         if not self.local_working_directory:

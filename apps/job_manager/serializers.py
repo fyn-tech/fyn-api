@@ -50,6 +50,7 @@ class JobInfoRunnerSerializer(serializers.ModelSerializer):
 class JobResourceSerializer(serializers.ModelSerializer):
     """For authenticated users - full CRUD access"""
     created_by = serializers.StringRelatedField(read_only=True)
+    file = serializers.FileField(allow_empty_file=True)  # Allow empty files
 
     class Meta:
         model = JobResource
@@ -68,8 +69,9 @@ class JobResourceSerializer(serializers.ModelSerializer):
 
 
 class JobResourceRunnerSerializer(serializers.ModelSerializer):
-    """For runners - minimal read/upload only"""
+    """For runners - read/upload access to assigned jobs"""
     download_url = serializers.SerializerMethodField()
+    file = serializers.FileField(allow_empty_file=True)  # Allow empty files
     
     class Meta:
         model = JobResource
@@ -78,6 +80,8 @@ class JobResourceRunnerSerializer(serializers.ModelSerializer):
             "job",
             "resource_type",
             "file",
+            "description",
+            "original_file_path",
             "filename", 
             "file_url",
             "download_url",

@@ -1,5 +1,7 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
 from runner_manager.authentication import RunnerTokenAuthentication
 from runner_manager.permissions import IsAuthenticatedRunner
 
@@ -71,10 +73,12 @@ from django.http import FileResponse, Http404
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+
 class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     serializer_class = JobResourceRunnerSerializer
     authentication_classes = [RunnerTokenAuthentication]
     permission_classes = [IsAuthenticatedRunner]
+    parser_classes = [MultiPartParser, FormParser]  # Enable file uploads
     
     def get_queryset(self):
         if hasattr(self.request, 'user') and hasattr(self.request.user, '_runner_info'):
@@ -107,13 +111,29 @@ class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
-    def update(self, request, *args, **kwargs):
-        return Response({"detail": "Runners cannot modify resources."}, status=405)
+    def perform_create(self, serializer):
+        """Validate job assignment before creating resource"""
+        job = serializer.validated_data['job']
+        
+        # Ensure runner can only upload to assigned jobs
+        if not hasattr(self.request.user, '_runner_info') or job.assigned_runner != self.request.user._runner_info:
+            raise serializers.ValidationError("You can only upload resources to jobs assigned to you.")
+        
+        # Set created_by to None for runner uploads (system upload)
+        serializer.save(created_by=None)
     
-    def partial_update(self, request, *args, **kwargs):
-        return Response({"detail": "Runners cannot modify resources."}, status=405)
+    def perform_update(self, serializer):
+        """Validate job assignment before updating resource"""
+        job = serializer.validated_data.get('job', serializer.instance.job)
+        
+        # Ensure runner can only update resources for assigned jobs
+        if not hasattr(self.request.user, '_runner_info') or job.assigned_runner != self.request.user._runner_info:
+            raise serializers.ValidationError("You can only update resources for jobs assigned to you.")
+        
+        serializer.save()
     
     def destroy(self, request, *args, **kwargs):
+        """Runners cannot delete resources"""
         return Response({"detail": "Runners cannot delete resources."}, status=405)
     
     @extend_schema(

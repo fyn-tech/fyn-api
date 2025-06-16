@@ -93,10 +93,10 @@ class JobAdmin(admin.ModelAdmin):
 
 @admin.register(JobResource)
 class JobResourceAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'job', 'resource_type', 'created_at', 'created_by', 'file_location')
+    list_display = ('filename', 'job', 'resource_type', 'created_at', 'created_by', 'file_location', 'original_file_path')
     list_filter = ('resource_type', 'created_at', 'job__status')
-    search_fields = ('job__name', 'description')
-    fields = ('job', 'resource_type', 'file', 'description', 'created_by')
+    search_fields = ('job__name', 'description', 'original_file_path')
+    fields = ('job', 'resource_type', 'file', 'description', 'original_file_path', 'created_by')
     readonly_fields = ('full_path_display',)
     
     def file_location(self, obj):

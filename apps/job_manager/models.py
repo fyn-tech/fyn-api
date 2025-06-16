@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 import os
 from application_registry.models import AppInfo
+from django.utils import timezone
 
 class JobStatus(models.TextChoices):
     QUEUED = "QD", _("QUEUED")
@@ -172,11 +173,20 @@ preserve_storage = PreserveFilenameStorage()
 def job_resource_upload_path(instance, filename):
     """
     Upload path relative to MEDIA_ROOT: user_{user_id}/job_{job_id}/filename
-    Preserves original filename since each job has its own directory
+    Generates meaningful filenames when original filename is not useful
     """
     try:
         # Clean the filename to prevent issues
         clean_filename = os.path.basename(filename)
+        
+        # If filename is generic (like 'file') or empty, generate a better one
+        if not clean_filename or clean_filename in ['file', 'upload']:
+            if hasattr(instance, 'original_file_path') and instance.original_file_path:
+                clean_filename = os.path.basename(instance.original_file_path)
+            else:
+                timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+                resource_type = getattr(instance, 'resource_type', 'file')
+                clean_filename = f"{instance.job.id}_{resource_type}_{timestamp}"
         
         return os.path.join(
             f"user_{instance.job.created_by.id}",
@@ -184,8 +194,8 @@ def job_resource_upload_path(instance, filename):
             clean_filename
         )
     except (AttributeError, ValueError):
-        # Fallback if job relationship is not available yet
-        return os.path.join("temp_uploads", os.path.basename(filename))
+        timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+        return os.path.join("temp_uploads", f"file_{timestamp}")
 
 class JobResource(models.Model):
     """
@@ -212,6 +222,11 @@ class JobResource(models.Model):
         max_length=200,
         blank=True,
         help_text="Optional description of the resource"
+    )
+    original_file_path = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="Original file path where this resource was created (optional)"
     )
     created_at = models.DateTimeField(
         auto_now_add=True,

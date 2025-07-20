@@ -1,16 +1,36 @@
-from rest_framework import viewsets, serializers
+# Copyright (C) 2025 fyn-api Authors
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not,
+#  see <https://www.gnu.org/licenses/>.
+
+import mimetypes
+import os
+
+from django.http import FileResponse, Http404
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework import serializers, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework import status
+
 from runner_manager.authentication import RunnerTokenAuthentication
 from runner_manager.permissions import IsAuthenticatedRunner
 
 from .models import JobInfo, JobResource
 from .serializers import (
-    JobInfoSerializer, 
     JobInfoRunnerSerializer,
+    JobInfoSerializer,
+    JobResourceRunnerSerializer,
     JobResourceSerializer,
-    JobResourceRunnerSerializer
 )
 
 
@@ -33,22 +53,29 @@ class JobInfoRunnerViewSet(viewsets.ModelViewSet):
     _edit_set = {'status', 'working_directory', 'exit_code'}
     def get_queryset(self):
         """Runner can only access jobs assigned to them"""
-        if hasattr(self.request, 'user') and hasattr(self.request.user, '_runner_info'):
-            return JobInfo.objects.filter(assigned_runner=self.request.user._runner_info)
+        if (hasattr(self.request, 'user') and 
+                hasattr(self.request.user, '_runner_info')):
+            return JobInfo.objects.filter(
+                assigned_runner=self.request.user._runner_info
+            )
         return JobInfo.objects.none()
     
     def update(self, request, *args, **kwargs):
         """Runners can only update status field"""
         if set(request.data.keys()) - self._edit_set:
-            return Response({"detail":"Runners can only update "
-                             f"{self._edit_set}  fields."}, status=400)
+            return Response(
+                {"detail": f"Runners can only update {self._edit_set} fields."},
+                status=400
+            )
         return super().update(request, *args, **kwargs)
     
     def partial_update(self, request, *args, **kwargs):
         """Runners can only update status field"""
         if set(request.data.keys()) - self._edit_set:
-            return Response({"detail":"Runners can only update "
-                             f"{self._edit_set}  fields."}, status=400)
+            return Response(
+                {"detail": f"Runners can only update {self._edit_set} fields."},
+                status=400
+            )
         return super().partial_update(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs):
@@ -67,13 +94,6 @@ class JobResourceViewSet(viewsets.ModelViewSet):
     queryset = JobResource.objects.all()
     serializer_class = JobResourceSerializer
 
-import os
-import mimetypes
-from django.http import FileResponse, Http404
-from rest_framework.decorators import action
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
-
 class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     serializer_class = JobResourceRunnerSerializer
     authentication_classes = [RunnerTokenAuthentication]
@@ -81,8 +101,11 @@ class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]  # Enable file uploads
     
     def get_queryset(self):
-        if hasattr(self.request, 'user') and hasattr(self.request.user, '_runner_info'):
-            queryset = JobResource.objects.filter(job__assigned_runner=self.request.user._runner_info)
+        if (hasattr(self.request, 'user') and 
+                hasattr(self.request.user, '_runner_info')):
+            queryset = JobResource.objects.filter(
+                job__assigned_runner=self.request.user._runner_info
+            )
             
             # Filter by query params
             job_id = self.request.query_params.get('job_id')
@@ -116,8 +139,11 @@ class JobResourceRunnerViewSet(viewsets.ModelViewSet):
         job = serializer.validated_data['job']
         
         # Ensure runner can only upload to assigned jobs
-        if not hasattr(self.request.user, '_runner_info') or job.assigned_runner != self.request.user._runner_info:
-            raise serializers.ValidationError("You can only upload resources to jobs assigned to you.")
+        if (not hasattr(self.request.user, '_runner_info') or 
+                job.assigned_runner != self.request.user._runner_info):
+            raise serializers.ValidationError(
+                "You can only upload resources to jobs assigned to you."
+            )
         
         # Set created_by to None for runner uploads (system upload)
         serializer.save(created_by=None)
@@ -127,8 +153,11 @@ class JobResourceRunnerViewSet(viewsets.ModelViewSet):
         job = serializer.validated_data.get('job', serializer.instance.job)
         
         # Ensure runner can only update resources for assigned jobs
-        if not hasattr(self.request.user, '_runner_info') or job.assigned_runner != self.request.user._runner_info:
-            raise serializers.ValidationError("You can only update resources for jobs assigned to you.")
+        if (not hasattr(self.request.user, '_runner_info') or 
+                job.assigned_runner != self.request.user._runner_info):
+            raise serializers.ValidationError(
+                "You can only update resources for jobs assigned to you."
+            )
         
         serializer.save()
     

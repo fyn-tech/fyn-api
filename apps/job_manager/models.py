@@ -1,12 +1,27 @@
-from django.db import models
-from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.files.storage import FileSystemStorage
-from django.utils.translation import gettext_lazy as _
-import uuid
+# Copyright (C) 2025 fyn-api Authors
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not,
+#  see <https://www.gnu.org/licenses/>.
+
 import os
-from application_registry.models import AppInfo
+import uuid
+
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+from application_registry.models import AppInfo
 
 class JobStatus(models.TextChoices):
     QUEUED = "QD", _("QUEUED")

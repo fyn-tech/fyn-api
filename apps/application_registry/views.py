@@ -11,17 +11,16 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from django.http import HttpResponse, Http404
 import os
 
-# Add this import for proper OpenAPI schema
-from drf_spectacular.utils import extend_schema
+from django.http import HttpResponse, Http404
 from drf_spectacular.openapi import OpenApiResponse
+from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets
+from rest_framework.decorators import action
 
-from .serializers import AppSerializer
 from .models import AppInfo
+from .serializers import AppSerializer
 
 
 class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
@@ -33,7 +32,10 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AppSerializer
 
     @extend_schema(
-        description="Download the raw program file for a specific application. Returns the file content directly based on the application type.",
+        description=(
+            "Download the raw program file for a specific application. "
+            "Returns the file content directly based on the application type."
+        ),
         responses={
             200: OpenApiResponse(
                 description='Program file content (binary or text)',

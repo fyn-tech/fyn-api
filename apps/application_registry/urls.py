@@ -12,8 +12,9 @@
 #  see <https://www.gnu.org/licenses/>.
 
 from django.urls import include, path
-from application_registry import views
 from rest_framework.routers import DefaultRouter
+
+from application_registry import views
 
 router = DefaultRouter()
 router.register(

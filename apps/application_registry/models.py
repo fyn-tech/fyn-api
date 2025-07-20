@@ -11,11 +11,13 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from django.db import models
 import uuid
 
+from django.db import models
+
+
 class AppType(models.TextChoices):
-    UNKNOWN = "unknown", "unknown" 
+    UNKNOWN = "unknown", "unknown"
     PYTHON_SCRIPT = 'python', 'Python Script'
     LINUX_BINARY = 'linux_binary', 'Linux Binary'
     WINDOWS_BINARY = 'windows_binary', 'Windows Binary'
@@ -23,21 +25,24 @@ class AppType(models.TextChoices):
 
 
 class AppInfo(models.Model):
-    
-    id = models.UUIDField(primary_key=True, 
-                          default=uuid.uuid4, 
-                          editable=False,
-                          help_text="Unique identification number")
-    name = models.CharField(max_length=100,
-                            blank=False, 
-                            null=False, 
-                            default="job", 
-                            help_text="User provided name for the application")
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Unique identification number"
+    )
+    name = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        default="job",
+        help_text="User provided name for the application"
+    )
     file_path = models.CharField(
         max_length=500,
         help_text="Full path to the application file"
     )
-
     type = models.CharField(
         default=AppType.UNKNOWN,
         max_length=20,

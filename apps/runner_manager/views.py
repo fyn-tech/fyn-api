@@ -1,38 +1,40 @@
-from django.http import JsonResponse, HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.template import loader
-from runner_manager.models import SystemInfo, RunnerInfo, RunnerStatus
-from accounts.models import User
-from django.forms import model_to_dict
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
+# Copyright (C) 2025 fyn-api Authors
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not,
+#  see <https://www.gnu.org/licenses/>.
 
-import secrets
 import json
+import secrets
 
-# -----------------------------------------------------------------------------
-# New API openAPI
-# -----------------------------------------------------------------------------
-
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from django.contrib.auth.decorators import login_required
+from django.forms import model_to_dict
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.template import loader
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
-    IsAuthenticated,
     DjangoModelPermissionsOrAnonReadOnly,
+    IsAuthenticated,
 )
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
-from rest_framework.permissions import IsAuthenticated
+
+from accounts.models import User
+from runner_manager.models import RunnerInfo, RunnerStatus, SystemInfo
+
 from .authentication import RunnerTokenAuthentication
 from .permissions import IsAuthenticatedRunner
-
-# from .models import Simulation
 from .serializers import RunnerInfoSerializer
 
 
@@ -44,7 +46,10 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
     queryset = RunnerInfo.objects.all()
     serializer_class = RunnerInfoSerializer
     authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly]
+    permission_classes = [
+        IsAuthenticated,
+        DjangoModelPermissionsOrAnonReadOnly
+    ]
 
 
 class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
@@ -86,7 +91,10 @@ class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
         """Disable list endpoint for runners"""
         return Response(
             {
-                "detail": "Runners cannot list all runners. Use retrieve with your runner ID."
+                "detail": (
+                    "Runners cannot list all runners. "
+                    "Use retrieve with your runner ID."
+                )
             },
             status=405,
         )

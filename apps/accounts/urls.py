@@ -1,15 +1,30 @@
-from django.urls import path
+# Copyright (C) 2025 fyn-api Authors
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not,
+#  see <https://www.gnu.org/licenses/>.
+
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
 from . import views
 
+router = DefaultRouter()
+router.register(
+    r"accounts/users", 
+    views.UserViewSet, 
+    basename="accounts_user"
+)
+
 urlpatterns = [
-    # front end api
-    path('register_user/', views.register_user, name='register_user'),
-    path('sign_in/', views.sign_in, name='sign_in'),
-    path('sign_out/', views.sign_out, name='sign_out'),
-    
-    # back end api
-    path('account_manager/', views.account_manager, name='account_manager'),
-    path('account_manager/get_all_users/', views.get_all_users, name='get_all_users'),
-    path('account_manager/get_all_users/get_user/<uuid:id>', views.get_user, name='get_user'),
-    path('account_manager/get_all_users/get_user/delete_user/<uuid:id>', views.delete_user, name='delete_user'),
+    # User endpoints
+    path('', include(router.urls)),
 ]
+

@@ -17,10 +17,14 @@ from django.middleware.csrf import get_token
 from django.template import loader
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from drf_spectacular.utils import extend_schema
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
+from .serializer import LoginSerializer
 
 def home(request):
     template = loader.get_template("master.html")
@@ -31,6 +35,11 @@ def home(request):
 # Account Authentication Related 
 # --------------------------------------------------------------------------------------------------
 
+@extend_schema(
+    responses={200: {'type': 'object', 'properties': {'csrf_token': {'type': 'string'}}}},
+    summary="Get CSRF token",
+    description="Get CSRF token for frontend authentication"
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @ensure_csrf_cookie
@@ -40,6 +49,28 @@ def csrf_token_view(request):
         'csrf_token': get_token(request)
     })
 
+@extend_schema(
+    request=LoginSerializer,
+    responses={
+        200: {
+            'type': 'object', 
+            'properties': {
+                'status': {'type': 'string'},
+                'userData': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'string'},
+                        'username': {'type': 'string'},
+                        'first_name': {'type': 'string'},
+                        'last_name': {'type': 'string'}
+                    }
+                }
+            }
+        }
+    },
+    summary="User login",
+    description="Login user and create session"
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
@@ -71,6 +102,12 @@ def login_view(request):
             'message': 'Invalid credentials'
         }, status=status.HTTP_401_UNAUTHORIZED)
 
+@extend_schema(
+    request=None, 
+    responses={200: {'type': 'object', 'properties': {'status': {'type': 'string'}}}},
+    summary="User logout", 
+    description="Logout user and destroy session"
+)
 @api_view(['POST'])
 def logout_view(request):
     """Logout endpoint - destroys session"""

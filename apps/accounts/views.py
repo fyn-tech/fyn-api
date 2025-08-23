@@ -13,7 +13,7 @@
 
 from rest_framework import viewsets 
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 from .models import User
 from .serializers import UserSerializer
@@ -32,4 +32,12 @@ class UserViewSet(viewsets.ModelViewSet):
         """Handle new user, allow request to create new user. """
         if self.action == 'create':  
             return [AllowAny()]
+        elif self.action == 'list':
+            return [IsAdminUser()] 
         return [IsAuthenticated()] 
+    
+    def get_queryset(self):
+        """Users can only access their own data"""
+        if self.action == 'list':
+            return self.queryset  
+        return self.queryset.filter(id=self.request.user.id)

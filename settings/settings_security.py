@@ -22,6 +22,7 @@ import os
 # --------------------------------------------------------------------------------------------------
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
+ENVIRONMENT = os.getenv("ENVIRONMENT")
 
 # --------------------------------------------------------------------------------------------------
 #  Setting Construction
@@ -35,7 +36,7 @@ if os.getenv("EC2_IP"):
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",") if ENVIRONMENT == "production" else ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # CSRF settings
 CSRF_COOKIE_SAMESITE = "Lax"
@@ -43,7 +44,7 @@ CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
 CSRF_COOKIE_PATH = "/"
 CSRF_USE_SESSIONS = False
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",") if ENVIRONMENT == "production" else ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # Session settings
 SESSION_COOKIE_SAMESITE = "Lax"

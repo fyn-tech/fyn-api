@@ -94,6 +94,7 @@ class JobResourceViewSet(viewsets.ModelViewSet):
     queryset = JobResource.objects.all()
     serializer_class = JobResourceSerializer
 
+
 class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     serializer_class = JobResourceRunnerSerializer
     authentication_classes = [RunnerTokenAuthentication]

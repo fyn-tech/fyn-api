@@ -58,6 +58,10 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     "SERVERS": SERVER_CONFIG,
+    "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": False, 
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+    ],
     "TAGS": [
         {"name": "Simulation", "description": "Simulation operations"},
     ],

@@ -25,6 +25,10 @@ from django.utils.translation import gettext_lazy as _
 
 from application_registry.models import AppInfo
 
+# --------------------------------------------------------------------------------------------------
+# Enumerators and Helpers
+# --------------------------------------------------------------------------------------------------
+
 class JobStatus(models.TextChoices):
     QUEUED = "QD", _("QUEUED")
     PREPARING = "PR", _("PREPARING")
@@ -40,6 +44,60 @@ class JobStatus(models.TextChoices):
     FAILED_TERMINATED = "FM", _("FAILED_TERMINATED")
     FAILED_TIMEOUT = "FO", _("FAILED_TIMEOUT")
     FAILED_RUNNER_EXCEPTION = "FE", _("FAILED_RUNNER_EXCEPTION")
+
+class ResourceType(models.TextChoices):
+    INPUT = "IN", _("INPUT")
+    OUTPUT = "OUT", _("OUTPUT") 
+    CONFIG = "CFG", _("CONFIG")
+    LOG = "LOG", _("LOG")
+    TEMP = "TMP", _("TEMPORARY")
+    RESULT = "RES", _("RESULT")
+
+class PreserveFilenameStorage(FileSystemStorage):
+    """
+    Custom storage that preserves original filenames and overwrites existing files.
+    """
+    
+    def get_valid_name(self, name):
+        """Return the original filename without Django's aggressive sanitization."""
+        return os.path.basename(name)
+    
+    def get_available_name(self, name, max_length=None):
+        """Allow overwrite of existing files instead of creating duplicates."""
+        return name
+
+preserve_storage = PreserveFilenameStorage()
+
+def job_resource_upload_path(instance, filename):
+    """
+    Upload path relative to MEDIA_ROOT: user_{user_id}/job_{job_id}/filename
+    Generates meaningful filenames when original filename is not useful
+    """
+    try:
+        # Clean the filename to prevent issues
+        clean_filename = os.path.basename(filename)
+        
+        # If filename is generic (like 'file') or empty, generate a better one
+        if not clean_filename or clean_filename in ['file', 'upload']:
+            if hasattr(instance, 'original_file_path') and instance.original_file_path:
+                clean_filename = os.path.basename(instance.original_file_path)
+            else:
+                timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+                resource_type = getattr(instance, 'resource_type', 'file')
+                clean_filename = f"{instance.job.id}_{resource_type}_{timestamp}"
+        
+        return os.path.join(
+            f"user_{instance.job.created_by.id}",
+            f"job_{instance.job.id}",
+            clean_filename
+        )
+    except (AttributeError, ValueError):
+        timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+        return os.path.join("temp_uploads", f"file_{timestamp}")
+
+# --------------------------------------------------------------------------------------------------
+# Models
+# --------------------------------------------------------------------------------------------------
 
 class JobInfo(models.Model):
 
@@ -162,57 +220,6 @@ class JobInfo(models.Model):
     def __str__(self):
         return f"{self.id} - {self.name} ({self.created_by.username})"
 
-class ResourceType(models.TextChoices):
-    INPUT = "IN", _("INPUT")
-    OUTPUT = "OUT", _("OUTPUT") 
-    CONFIG = "CFG", _("CONFIG")
-    LOG = "LOG", _("LOG")
-    TEMP = "TMP", _("TEMPORARY")
-    RESULT = "RES", _("RESULT")
-
-# Custom storage class - add this right after imports
-class PreserveFilenameStorage(FileSystemStorage):
-    """
-    Custom storage that preserves original filenames and overwrites existing files.
-    """
-    
-    def get_valid_name(self, name):
-        """Return the original filename without Django's aggressive sanitization."""
-        return os.path.basename(name)
-    
-    def get_available_name(self, name, max_length=None):
-        """Allow overwrite of existing files instead of creating duplicates."""
-        return name
-
-# Create storage instance
-preserve_storage = PreserveFilenameStorage()
-
-def job_resource_upload_path(instance, filename):
-    """
-    Upload path relative to MEDIA_ROOT: user_{user_id}/job_{job_id}/filename
-    Generates meaningful filenames when original filename is not useful
-    """
-    try:
-        # Clean the filename to prevent issues
-        clean_filename = os.path.basename(filename)
-        
-        # If filename is generic (like 'file') or empty, generate a better one
-        if not clean_filename or clean_filename in ['file', 'upload']:
-            if hasattr(instance, 'original_file_path') and instance.original_file_path:
-                clean_filename = os.path.basename(instance.original_file_path)
-            else:
-                timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
-                resource_type = getattr(instance, 'resource_type', 'file')
-                clean_filename = f"{instance.job.id}_{resource_type}_{timestamp}"
-        
-        return os.path.join(
-            f"user_{instance.job.created_by.id}",
-            f"job_{instance.job.id}",
-            clean_filename
-        )
-    except (AttributeError, ValueError):
-        timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
-        return os.path.join("temp_uploads", f"file_{timestamp}")
 
 class JobResource(models.Model):
     """

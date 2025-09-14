@@ -20,6 +20,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import extend_schema
 
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -56,7 +57,8 @@ def csrf_token_view(request):
             'type': 'object', 
             'properties': {
                 'status': {'type': 'string'},
-                'userData': {
+                'token': {'type': 'string'},
+                'user_data': {
                     'type': 'object',
                     'properties': {
                         'id': {'type': 'string'},
@@ -85,17 +87,20 @@ def login_view(request):
         }, status=status.HTTP_400_BAD_REQUEST)
     
     user = authenticate(request, username=username, password=password)
+    
     if user is not None:
-        login(request, user)  
+        token, created = Token.objects.get_or_create(user=user)
+    
         return Response({
-            'status': 'success',
-            'userData': {
-                'id': str(user.id),
-                'username': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name
-            }
-        })
+                'status': 'success',
+                'token': token.key,
+                'user_data': {
+                    'id': str(user.id),
+                    'username': user.username,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name
+                }
+            })
     else:
         return Response({
             'status': 'error', 

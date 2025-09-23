@@ -85,16 +85,16 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
         responses={
             200: OpenApiResponse(
                 description='JSON schema content',
-                response={'type': 'object'} 
+                response={'type': 'object'}
             ),
             404: OpenApiResponse(description='Schema file not found')
         }
     )
     @action(detail=True, methods=['get'])
-    def schema(self, request, pk=None):
+    def program_schema(self, request, pk=None):
         """
         Get the JSON schema content for a specific application.
-        Returns the schema as parsed JSON data.
+        Returns the schema as JSON.
         """
         app_info = self.get_object()
         
@@ -112,14 +112,13 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
             if not os.path.exists(schema_path):
                 raise Http404("Schema file not found")
             
-            # Read and parse JSON file
+            # Read JSON file
             with open(schema_path, 'r') as file:
-                schema_data = json.load(file)
+                schema_data = file.read()
             
-            # Return as JSON response
-            return Response(schema_data)
+            # Return as HttpResponse with JSON content type
+            return HttpResponse(schema_data, content_type='application/json')
             
-        except json.JSONDecodeError as e:
-            raise Http404(f"Invalid JSON in schema file: {str(e)}")
         except Exception as e:
             raise Http404(f"Error reading schema file: {str(e)}")
+        

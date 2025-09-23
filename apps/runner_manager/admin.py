@@ -22,6 +22,7 @@ from job_manager.models import JobInfo
 class RunnerInfoAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "name",
         "token",
         "state",
         "get_system_name",

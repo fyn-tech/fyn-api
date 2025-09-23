@@ -22,6 +22,7 @@ class AppRegAdmin(admin.ModelAdmin):
         "name",
         "type",
         "file_path",
+        "schema_path",
     )
 
     readonly_fields = (

@@ -49,6 +49,12 @@ class AppInfo(models.Model):
         choices=AppType.choices,
         help_text="Type of application program"
     )
+    schema_path = models.CharField(
+        max_length=500,
+        blank=True, 
+        null=True,
+        help_text="Full path to the input schema file"
+    ) 
     
     @property
     def content_type(self):

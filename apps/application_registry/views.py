@@ -75,3 +75,51 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
             
         except Exception as e:
             raise Http404(f"Error reading program file: {str(e)}")
+        
+
+    @extend_schema(
+        description=(
+            "Get the JSON schema for a specific application. "
+            "Returns the schema content as JSON."
+        ),
+        responses={
+            200: OpenApiResponse(
+                description='JSON schema content',
+                response={'type': 'object'} 
+            ),
+            404: OpenApiResponse(description='Schema file not found')
+        }
+    )
+    @action(detail=True, methods=['get'])
+    def schema(self, request, pk=None):
+        """
+        Get the JSON schema content for a specific application.
+        Returns the schema as parsed JSON data.
+        """
+        app_info = self.get_object()
+        
+        if not app_info.schema_path:
+            raise Http404("No schema defined for this application")
+        
+        try:
+            # Handle both FileField paths and direct file paths
+            if hasattr(app_info.schema_path, 'path'):
+                schema_path = app_info.schema_path.path
+            else:
+                schema_path = str(app_info.schema_path)
+            
+            # Check if file exists
+            if not os.path.exists(schema_path):
+                raise Http404("Schema file not found")
+            
+            # Read and parse JSON file
+            with open(schema_path, 'r') as file:
+                schema_data = json.load(file)
+            
+            # Return as JSON response
+            return Response(schema_data)
+            
+        except json.JSONDecodeError as e:
+            raise Http404(f"Invalid JSON in schema file: {str(e)}")
+        except Exception as e:
+            raise Http404(f"Error reading schema file: {str(e)}")

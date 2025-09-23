@@ -51,6 +51,15 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
         DjangoModelPermissionsOrAnonReadOnly
     ]
 
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """Users can only access their own runners"""
+        if hasattr(self.request, "user") and self.request.user.is_authenticated:
+            return RunnerInfo.objects.filter(owner=self.request.user)
+        return RunnerInfo.objects.none()
+
 
 class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
     serializer_class = RunnerInfoSerializer

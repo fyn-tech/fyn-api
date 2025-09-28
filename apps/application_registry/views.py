@@ -18,6 +18,7 @@ from drf_spectacular.openapi import OpenApiResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 
 from .models import AppInfo
 from .serializers import AppSerializer
@@ -30,6 +31,7 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AppInfo.objects.all()
     serializer_class = AppSerializer
+    permission_classes = [AllowAny]
 
     @extend_schema(
         description=(

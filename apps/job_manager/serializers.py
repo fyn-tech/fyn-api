@@ -29,9 +29,11 @@ class JobInfoSerializer(serializers.ModelSerializer):
             "priority",
             "created_at",
             "updated_at",
+            "created_by",
             "status",
             "assigned_runner",
-            "created_by",
+            "application_id",
+            "command_line_args",
         ]
         read_only_fields = ["updated_at", "created_by"]
 

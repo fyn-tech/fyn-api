@@ -24,6 +24,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from application_registry.models import AppInfo
+from runner_manager.models import RunnerInfo
 
 # --------------------------------------------------------------------------------------------------
 # Enumerators and Helpers
@@ -136,7 +137,7 @@ class JobInfo(models.Model):
 
     # Job Execution Resources
     assigned_runner = models.ForeignKey(
-        "runner_manager.RunnerInfo",
+        RunnerInfo,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -144,7 +145,8 @@ class JobInfo(models.Model):
     application_id = models.ForeignKey(
         AppInfo, 
         on_delete=models.CASCADE,
-        null=True,
+        null=False,
+        blank=False,
         help_text="The application id this job will execute"
     )
     executable = models.CharField(

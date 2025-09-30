@@ -31,6 +31,7 @@ from runner_manager.models import RunnerInfo
 # --------------------------------------------------------------------------------------------------
 
 class JobStatus(models.TextChoices):
+    UPLOADING_INPUT_RESOURCES = "UI", _("UPLOADING_INPUT_RESOURCES")
     QUEUED = "QD", _("QUEUED")
     PREPARING = "PR", _("PREPARING")
     FETCHING_RESOURCES = "FR", _("FETCHING_RESOURCES")
@@ -131,6 +132,8 @@ class JobInfo(models.Model):
     status = models.CharField(
         default=JobStatus.QUEUED, 
         max_length=2, 
+        blank=False,
+        null=False,
         choices=JobStatus.choices,
         help_text="Current status of the job."
     )

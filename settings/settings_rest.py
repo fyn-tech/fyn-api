@@ -16,6 +16,7 @@ Django REST Framework and DRF Spectacular settings
 """
 
 import os
+from datetime import timedelta
 
 
 # --------------------------------------------------------------------------------------------------
@@ -45,6 +46,7 @@ SERVER_CONFIG = [
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "runner_manager.authentication.RunnerTokenAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
@@ -83,5 +85,27 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
+# JWT Settings
+# Note: SECRET_KEY will be set from main settings after import
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': os.getenv("SECRET_KEY"),  # Get directly from environment
+    'VERIFYING_KEY': None,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
 # Export settings only.
-__all__ = ['REST_FRAMEWORK', 'SPECTACULAR_SETTINGS']
+__all__ = ['REST_FRAMEWORK', 'SPECTACULAR_SETTINGS', 'SIMPLE_JWT']

@@ -22,7 +22,6 @@ from django.template import loader
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
     DjangoModelPermissionsOrAnonReadOnly,
@@ -45,7 +44,6 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
 
     queryset = RunnerInfo.objects.all()
     serializer_class = RunnerInfoSerializer
-    authentication_classes = [SessionAuthentication]
     permission_classes = [
         IsAuthenticated,
         DjangoModelPermissionsOrAnonReadOnly

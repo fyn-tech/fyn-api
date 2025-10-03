@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt",
     # Local App
     "accounts",
     "application_registry",

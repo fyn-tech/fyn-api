@@ -22,6 +22,11 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 from . import views
 
 urlpatterns = [
@@ -33,6 +38,11 @@ urlpatterns = [
     path('auth/csrf/', views.csrf_token_view, name='csrf-token'),
     path('auth/user/login/', views.login_view, name='login'),
     path('auth/user/logout/', views.logout_view, name='logout'),
+
+    # JWT Token endpoints
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
     # App endpoints
     path("", include("accounts.urls")),

@@ -39,13 +39,13 @@ def home(request):
 @extend_schema(
     responses={200: {'type': 'object', 'properties': {'csrf_token': {'type': 'string'}}}},
     summary="Get CSRF token",
-    description="Get CSRF token for frontend authentication"
+    description="Get CSRF token for form protection (still useful for forms)"
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @ensure_csrf_cookie
 def csrf_token_view(request):
-    """Get CSRF token for frontend"""
+    """Get CSRF token - still useful for form protection"""
     return Response({
         'csrf_token': get_token(request)
     })
@@ -54,58 +54,24 @@ def csrf_token_view(request):
     request=LoginSerializer,
     responses={
         200: {
-            'type': 'object', 
+            'type': 'object',
             'properties': {
                 'status': {'type': 'string'},
-                'token': {'type': 'string'},
-                'user_data': {
-                    'type': 'object',
-                    'properties': {
-                        'id': {'type': 'string'},
-                        'username': {'type': 'string'},
-                        'first_name': {'type': 'string'},
-                        'last_name': {'type': 'string'}
-                    }
-                }
+                'message': {'type': 'string'}
             }
         }
     },
-    summary="User login",
-    description="Login user and create session"
+    summary="User login (DEPRECATED - Use /api/token/ instead)",
+    description="DEPRECATED: This endpoint is deprecated. Please use JWT token authentication at /api/token/ instead."
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    """Login endpoint - creates session"""
-    username = request.data.get('username')
-    password = request.data.get('password')
-    
-    if not username or not password:
-        return Response({
-            'status': 'error', 
-            'message': 'Username and password required'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    user = authenticate(request, username=username, password=password)
-    
-    if user is not None:
-        token, created = Token.objects.get_or_create(user=user)
-    
-        return Response({
-                'status': 'success',
-                'token': token.key,
-                'user_data': {
-                    'id': str(user.id),
-                    'username': user.username,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name
-                }
-            })
-    else:
-        return Response({
-            'status': 'error', 
-            'message': 'Invalid credentials'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+    """DEPRECATED: Login endpoint - Use /api/token/ for JWT authentication instead"""
+    return Response({
+        'status': 'deprecated',
+        'message': 'This endpoint is deprecated. Please use /api/token/ for JWT authentication.'
+    }, status=status.HTTP_410_GONE)
 
 @extend_schema(
     request=None, 

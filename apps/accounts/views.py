@@ -11,8 +11,7 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from rest_framework import viewsets 
-from rest_framework.authentication import SessionAuthentication
+from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 from .models import User
@@ -26,8 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = [SessionAuthentication] 
-
+   
     def get_permissions(self):
         """Handle new user, allow request to create new user. """
         if self.action == 'create':  

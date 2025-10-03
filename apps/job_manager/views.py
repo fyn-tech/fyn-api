@@ -18,7 +18,6 @@ from django.http import FileResponse, Http404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import serializers, viewsets
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -44,7 +43,6 @@ class JobInfoViewSet(viewsets.ModelViewSet):
     """
     queryset = JobInfo.objects.all()
     serializer_class = JobInfoSerializer
-    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -103,7 +101,6 @@ class JobResourceViewSet(viewsets.ModelViewSet):
     """
     queryset = JobResource.objects.all()
     serializer_class = JobResourceSerializer
-    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
 

@@ -33,7 +33,10 @@ class JobInfoSerializer(serializers.ModelSerializer):
             "status",
             "assigned_runner",
             "application_id",
+            "executable",
             "command_line_args",
+            "exit_code",
+            "resources",
         ]
         read_only_fields = ["updated_at", "created_by"]
 

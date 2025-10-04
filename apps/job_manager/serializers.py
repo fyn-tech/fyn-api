@@ -82,8 +82,9 @@ class JobResourceSerializer(serializers.ModelSerializer):
             "resource_type",
             "file",
             "description",
+            "original_file_path",
             "created_at",
-            "created_by", 
+            "created_by",
             "filename",
             "file_url",
         ]

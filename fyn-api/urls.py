@@ -35,7 +35,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     
     # Auth endpoints
-    path('auth/csrf/', views.csrf_token_view, name='csrf-token'),
     path('auth/user/login/', views.login_view, name='login'),
     path('auth/user/logout/', views.logout_view, name='logout'),
 

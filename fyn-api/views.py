@@ -37,20 +37,6 @@ def home(request):
 # --------------------------------------------------------------------------------------------------
 
 @extend_schema(
-    responses={200: {'type': 'object', 'properties': {'csrf_token': {'type': 'string'}}}},
-    summary="Get CSRF token",
-    description="Get CSRF token for form protection (still useful for forms)"
-)
-@api_view(['GET'])
-@permission_classes([AllowAny])
-@ensure_csrf_cookie
-def csrf_token_view(request):
-    """Get CSRF token - still useful for form protection"""
-    return Response({
-        'csrf_token': get_token(request)
-    })
-
-@extend_schema(
     request=LoginSerializer,
     responses={
         200: {

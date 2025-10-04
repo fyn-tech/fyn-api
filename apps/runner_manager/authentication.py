@@ -13,11 +13,17 @@
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
 from .models import RunnerInfo
 
 
 class RunnerTokenAuthentication(TokenAuthentication):
+    """
+    Custom token authentication for runner agents.
+    Authenticates runner machines using their unique tokens.
+    """
+
     def authenticate_credentials(self, key):
         try:
             runner = RunnerInfo.objects.select_related("owner").get(token=key)
@@ -31,3 +37,16 @@ class RunnerTokenAuthentication(TokenAuthentication):
         user._runner_info = runner
 
         return (user, runner)
+
+
+class RunnerTokenScheme(OpenApiAuthenticationExtension):
+    target_class = 'runner_manager.authentication.RunnerTokenAuthentication'
+    name = 'runnerTokenAuth'  # Unique name to avoid conflicts
+
+    def get_security_definition(self, auto_schema):
+        return {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'Token-based authentication for runner agents. Format: `Token <runner_token>`'
+        }

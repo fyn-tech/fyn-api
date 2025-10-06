@@ -20,6 +20,8 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -318,3 +320,31 @@ class JobResource(models.Model):
             # Delete the file from storage
             self.file.delete(save=False)
         super().delete(*args, **kwargs)
+
+
+@receiver(pre_delete, sender=JobResource)
+def cleanup_job_resource_files(sender, instance, **kwargs):
+    """
+    Signal handler to clean up files and empty directories when JobResource is deleted.
+    This runs even during cascade deletes (when JobInfo is deleted).
+    """
+    if instance.file:
+        try:
+            # Get the file path before deleting
+            file_path = instance.file.path
+            job_folder = os.path.dirname(file_path)
+
+            # Delete the file
+            instance.file.delete(save=False)
+
+            # Check if job folder is now empty and delete it
+            if os.path.isdir(job_folder) and not os.listdir(job_folder):
+                os.rmdir(job_folder)
+
+        except (ValueError, OSError) as e:
+            # Log but don't fail the deletion if file cleanup fails
+            # ValueError: file.path raises this if file doesn't exist
+            # OSError: permission or filesystem errors
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Failed to cleanup file for JobResource {instance.id}: {e}")

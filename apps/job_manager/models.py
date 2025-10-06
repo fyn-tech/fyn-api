@@ -230,6 +230,12 @@ class JobResource(models.Model):
     """
     Simple model for job resources - all files go to root job directory
     """
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Unique resource identification number"
+    )
     job = models.ForeignKey(
         JobInfo,
         on_delete=models.CASCADE,

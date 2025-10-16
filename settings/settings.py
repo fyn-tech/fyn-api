@@ -109,6 +109,9 @@ else:  # Local development database
         }
     }
 
+# Websocket settings
+from settings.settings_websocket import *
+
 # REST settings Generation
 from settings.settings_rest import *
 

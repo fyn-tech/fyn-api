@@ -18,6 +18,7 @@ from drf_spectacular.openapi import OpenApiResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 
 from .models import AppInfo
 from .serializers import AppSerializer
@@ -30,6 +31,7 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AppInfo.objects.all()
     serializer_class = AppSerializer
+    permission_classes = [AllowAny]
 
     @extend_schema(
         description=(
@@ -75,3 +77,50 @@ class AppRegViewSet(viewsets.ReadOnlyModelViewSet):
             
         except Exception as e:
             raise Http404(f"Error reading program file: {str(e)}")
+        
+
+    @extend_schema(
+        description=(
+            "Get the JSON schema for a specific application. "
+            "Returns the schema content as JSON."
+        ),
+        responses={
+            200: OpenApiResponse(
+                description='JSON schema content',
+                response={'type': 'object'}
+            ),
+            404: OpenApiResponse(description='Schema file not found')
+        }
+    )
+    @action(detail=True, methods=['get'])
+    def program_schema(self, request, pk=None):
+        """
+        Get the JSON schema content for a specific application.
+        Returns the schema as JSON.
+        """
+        app_info = self.get_object()
+        
+        if not app_info.schema_path:
+            raise Http404("No schema defined for this application")
+        
+        try:
+            # Handle both FileField paths and direct file paths
+            if hasattr(app_info.schema_path, 'path'):
+                schema_path = app_info.schema_path.path
+            else:
+                schema_path = str(app_info.schema_path)
+            
+            # Check if file exists
+            if not os.path.exists(schema_path):
+                raise Http404("Schema file not found")
+            
+            # Read JSON file
+            with open(schema_path, 'r') as file:
+                schema_data = file.read()
+            
+            # Return as HttpResponse with JSON content type
+            return HttpResponse(schema_data, content_type='application/json')
+            
+        except Exception as e:
+            raise Http404(f"Error reading schema file: {str(e)}")
+        

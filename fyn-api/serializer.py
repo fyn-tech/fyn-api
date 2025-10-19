@@ -11,12 +11,9 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from django.apps import AppConfig
+from rest_framework import serializers
 
 
-class JobManagerConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "job_manager"
-
-    def ready(self):
-        import job_manager.signals
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)

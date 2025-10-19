@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt",
     # Local App
     "accounts",
     "application_registry",
@@ -107,6 +108,9 @@ else:  # Local development database
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
+# Websocket settings
+from settings.settings_websocket import *
 
 # REST settings Generation
 from settings.settings_rest import *

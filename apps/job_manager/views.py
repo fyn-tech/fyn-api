@@ -17,10 +17,13 @@ import os
 from django.http import FileResponse, Http404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import serializers, status, viewsets
+from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.permissions import (
+    IsAuthenticated,
+)
 
 from runner_manager.authentication import RunnerTokenAuthentication
 from runner_manager.permissions import IsAuthenticatedRunner
@@ -40,6 +43,11 @@ class JobInfoViewSet(viewsets.ModelViewSet):
     """
     queryset = JobInfo.objects.all()
     serializer_class = JobInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        """Set created_by to current user when creating a job"""
+        serializer.save(created_by=self.request.user)
 
 
 class JobInfoRunnerViewSet(viewsets.ModelViewSet):
@@ -93,6 +101,8 @@ class JobResourceViewSet(viewsets.ModelViewSet):
     """
     queryset = JobResource.objects.all()
     serializer_class = JobResourceSerializer
+    permission_classes = [IsAuthenticated]
+
 
 class JobResourceRunnerViewSet(viewsets.ModelViewSet):
     serializer_class = JobResourceRunnerSerializer

@@ -11,17 +11,62 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+from django.middleware.csrf import get_token
 from django.template import loader
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from drf_spectacular.utils import extend_schema
+
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+from .serializer import LoginSerializer
 
 def home(request):
     template = loader.get_template("master.html")
     context = {}
     return HttpResponse(template.render(context, request))
 
+# --------------------------------------------------------------------------------------------------
+# Account Authentication Related 
+# --------------------------------------------------------------------------------------------------
 
-@ensure_csrf_cookie
-def get_csrf_token(request):
-    return JsonResponse({"detail": "CSRF cookie set"})
+@extend_schema(
+    request=LoginSerializer,
+    responses={
+        200: {
+            'type': 'object',
+            'properties': {
+                'status': {'type': 'string'},
+                'message': {'type': 'string'}
+            }
+        }
+    },
+    summary="User login (DEPRECATED - Use /api/token/ instead)",
+    description="DEPRECATED: This endpoint is deprecated. Please use JWT token authentication at /api/token/ instead."
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    """DEPRECATED: Login endpoint - Use /api/token/ for JWT authentication instead"""
+    return Response({
+        'status': 'deprecated',
+        'message': 'This endpoint is deprecated. Please use /api/token/ for JWT authentication.'
+    }, status=status.HTTP_410_GONE)
+
+@extend_schema(
+    request=None, 
+    responses={200: {'type': 'object', 'properties': {'status': {'type': 'string'}}}},
+    summary="User logout", 
+    description="Logout user and destroy session"
+)
+@api_view(['POST'])
+def logout_view(request):
+    """Logout endpoint - destroys session"""
+    logout(request)  
+    return Response({'status': 'success'})

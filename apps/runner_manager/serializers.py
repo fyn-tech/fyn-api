@@ -28,6 +28,7 @@ class RunnerInfoFullSerializer(serializers.ModelSerializer):
         model = RunnerInfo
         fields = [
             "id",
+            "name",
             "state",
             "owner",
             "token",
@@ -42,6 +43,7 @@ class RunnerInfoSerializer(serializers.ModelSerializer):
         model = RunnerInfo
         fields = [
             "id",
+            "name",
             "state",
             "owner",
             "created_at",

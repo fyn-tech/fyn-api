@@ -25,6 +25,7 @@
 #  see <https://www.gnu.org/licenses/>.
 
 import argparse
+import json
 from pathlib import Path
 from pydantic import BaseModel, Field
 import sys
@@ -50,8 +51,18 @@ def main():
         '--input',
         type=str,
         help="The path to the input yaml file")
+    parser.add_argument(
+        '--generate-schema',
+        action='store_true',
+        help="Generate and print JSON schema"
+    )
     args = parser.parse_args()
 
+
+    if args.generate_schema:
+        schema = Config.model_json_schema()
+        print(json.dumps(schema, indent=2))
+        sys.exit(0)
 
     input_path = Path(args.input)
     if not input_path.exists():

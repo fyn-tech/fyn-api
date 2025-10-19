@@ -22,7 +22,6 @@ from django.template import loader
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
     DjangoModelPermissionsOrAnonReadOnly,
@@ -45,11 +44,19 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
 
     queryset = RunnerInfo.objects.all()
     serializer_class = RunnerInfoSerializer
-    authentication_classes = [SessionAuthentication]
     permission_classes = [
         IsAuthenticated,
         DjangoModelPermissionsOrAnonReadOnly
     ]
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """Users can only access their own runners"""
+        if hasattr(self.request, "user") and self.request.user.is_authenticated:
+            return RunnerInfo.objects.filter(owner=self.request.user)
+        return RunnerInfo.objects.none()
 
 
 class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):

@@ -22,26 +22,35 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 from . import views
 
-
 urlpatterns = [
+    # Home and Admin
     path("", views.home, name="home"),
     path("admin/", admin.site.urls),
-    path("accounts/", include("accounts.urls")),
-    path("get_csrf_token/", views.get_csrf_token, name="get_csrf_token"),
-    path("schema/", SpectacularAPIView.as_view(), name="schema"),
-    path(
-        "schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc",
-    ),
-    path(
-        "schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
+    
+    # Auth endpoints
+    path('auth/user/login/', views.login_view, name='login'),
+    path('auth/user/logout/', views.logout_view, name='logout'),
+
+    # JWT Token endpoints
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    
+    # App endpoints
+    path("", include("accounts.urls")),
     path("", include("application_registry.urls")),
     path("", include("job_manager.urls")),
     path("", include("runner_manager.urls")),
+
+    # OpenAPI endpoints
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("schema/swagger-ui/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui")
 ]

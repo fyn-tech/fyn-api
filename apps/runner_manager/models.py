@@ -28,6 +28,7 @@ class RunnerInfo(models.Model):
 
     # meta data
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, blank=False, null=False, default="")
     token = models.CharField(max_length=100, blank=False, null=False, default="")
     state = models.CharField(
         max_length=20,

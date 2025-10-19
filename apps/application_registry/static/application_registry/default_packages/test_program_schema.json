@@ -1,0 +1,21 @@
+{
+  "description": "Configuration for the test program.",
+  "properties": {
+    "sleep_time": {
+      "description": "The seconds the program must sleep for.",
+      "title": "Sleep Time",
+      "type": "integer"
+    },
+    "exit_code": {
+      "description": "The exit code the program must print",
+      "title": "Exit Code",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sleep_time",
+    "exit_code"
+  ],
+  "title": "Config",
+  "type": "object"
+}

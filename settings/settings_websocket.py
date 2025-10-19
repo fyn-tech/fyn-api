@@ -11,12 +11,18 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
-from django.apps import AppConfig
+"""
+Django REST Framework and DRF Spectacular settings
+"""
 
+import os
+from datetime import timedelta
 
-class JobManagerConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "job_manager"
-
-    def ready(self):
-        import job_manager.signals
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

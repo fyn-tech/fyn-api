@@ -3,9 +3,12 @@ channels==4.2.2
 daphne==4.1.2
 Django==5.0.1
 django-cors-headers==4.3.1
-PyYAML==6.0.1
-sqlparse==0.4.4
+djangorestframework
+djangorestframework-simplejwt==5.3.1
+drf-spectacular
 gunicorn==21.2.0
 psycopg2-binary==2.9.9
+pydantic
 python-dotenv==1.0.1
-djangorestframework-simplejwt==5.3.1
+PyYAML==6.0.1
+sqlparse==0.4.4

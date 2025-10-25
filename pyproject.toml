@@ -1,9 +1,33 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fyn-api"
+version = "0.1.0"
+dependencies = [
+    "asgiref==3.7.2",
+    "channels==4.2.2",
+    "daphne==4.1.2",
+    "Django==5.0.1",
+    "django-cors-headers==4.3.1",
+    "djangorestframework",
+    "djangorestframework-simplejwt==5.3.1",
+    "drf-spectacular",
+    "gunicorn==21.2.0",
+    "psycopg2-binary==2.9.9",
+    "pydantic",
+    "python-dotenv==1.0.1",
+    "PyYAML==6.0.1",
+    "sqlparse==0.4.4",
+]
+
 [project.optional-dependencies]
 dev = [
-    "pylint",
     "autopep8",
     "flake8",
     "pre-commit",
+    "pylint",
 ]
 
 [tool.autopep8]

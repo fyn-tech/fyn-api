@@ -28,7 +28,7 @@ ENVIRONMENT = os.getenv("ENVIRONMENT")
 
 SERVER_CONFIG = [
         {
-            "url": "http://api.fyn-tech.com:8000", 
+            "url": "https://api.fyn-tech.com", 
             "description": "Production API"
         } ,
     ] if ENVIRONMENT == "production" else [

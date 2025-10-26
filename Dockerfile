@@ -1,7 +1,10 @@
+# Docker file for production deployment, currently debug is true so obtain better debugging output.
+# ... kind of like RelWithDebInfo
+
 FROM python:3.12-slim
 
 ENV DEBUG=True \
-ENVIRONMENT=Debug
+ENVIRONMENT=production
 
 WORKDIR /app
 

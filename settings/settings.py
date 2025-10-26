@@ -15,14 +15,8 @@ from pathlib import Path
 import os
 import sys
 
-if os.path.exists("/var/app/current/env_vars"):
-    env_file = "/var/app/current/env_vars"
-else:
-    env_file = ".env"
-load_dotenv(env_file)
-
 # early project debugging output
-env_vars = dotenv_values(env_file)
+env_vars = load_dotenv(".env", override=False)
 print(f"Env Vars: {env_vars}")
 print("Current ENVIRONMENT value:", os.getenv("ENVIRONMENT"))
 

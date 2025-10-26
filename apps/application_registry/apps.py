@@ -37,22 +37,32 @@ class ApplicationRegistryConfig(AppConfig):
             return
     
         # Check programs exist
-        path = settings.BASE_DIR / (
+        app_path = settings.BASE_DIR / (
                 "apps/application_registry/static/application_registry/default_packages/"
                 "test_program.py"
                 )
+        schema_path = settings.BASE_DIR / (
+                "apps/application_registry/static/application_registry/default_packages/"
+                "test_program_schema.json"
+                )
         if not AppInfo.objects.filter(name="test_program").exists():
-            if path.exists():
+            if app_path.exists() and schema_path.exists():
                 AppInfo.objects.create(name="test_program", type=AppType.PYTHON_SCRIPT,
-                                       file_path=str(path))
-                print("Found test_program, adding to application registry.")
+                                       file_path=str(app_path), schema_path=str(schema_path))
+                print("Found test_program and test_program_schema, adding to application registry.")
             else:
-                print("Warning: cannot find test_program.py or it is not a file, "
+                print("Warning: cannot find test_program.py or test_program_schema.json, "
                         "skipping default database injection.")
         else: 
-            if not path.exists():
+            if not app_path.exists():
                 test_program_app = AppInfo.objects.filter(name="test_program")
                 test_program_app.delete()
                 print("Found test_program but not the file test_program.py, removed test_program.")
+
+            if not schema_path.exists():
+                test_program_app = AppInfo.objects.filter(name="test_program")
+                test_program_app.delete()
+                print("Found test_program but not the file test_program_schema.json, "
+                      "removed test_program.")
 
         print("="*80 + "\033[0m")

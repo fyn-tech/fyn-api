@@ -45,16 +45,16 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 
 # CSRF settings
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
+CSRF_COOKIE_SECURE = ENVIRONMENT == "production" 
+CSRF_COOKIE_DOMAIN = None if ENVIRONMENT != "production" else ".fyn-tech.com"  
 CSRF_COOKIE_PATH = "/"
 CSRF_USE_SESSIONS = False
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",") if ENVIRONMENT == "production" else ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # Session settings
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_DOMAIN = None if DEBUG else ".fyn-tech.com"
+SESSION_COOKIE_SECURE = ENVIRONMENT == "production"  
+SESSION_COOKIE_DOMAIN = None if ENVIRONMENT != "production" else ".fyn-tech.com"  
 SESSION_COOKIE_PATH = "/"
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 

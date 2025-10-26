@@ -19,7 +19,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
             cd /home/ubuntu
+            docker-compose down
             docker-compose pull
             docker-compose up -d
             docker-compose exec -T web python manage.py migrate

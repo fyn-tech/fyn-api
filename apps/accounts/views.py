@@ -11,8 +11,11 @@
 # You should have received a copy of the GNU General Public License along with this program. If not,
 #  see <https://www.gnu.org/licenses/>.
 
+
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import User
 from .serializers import UserSerializer
@@ -30,12 +33,9 @@ class UserViewSet(viewsets.ModelViewSet):
         """Handle new user, allow request to create new user. """
         if self.action == 'create':  
             return [AllowAny()]
-        elif self.action == 'list':
-            return [IsAdminUser()] 
         return [IsAuthenticated()] 
     
-    def get_queryset(self):
-        """Users can only access their own data"""
-        if self.action == 'list':
-            return self.queryset  
-        return self.queryset.filter(id=self.request.user.id)
+    @extend_schema(exclude=True)
+    def list(self, request, *args, **kwargs):
+        """No returning of lists of users. """
+        raise MethodNotAllowed('GET')

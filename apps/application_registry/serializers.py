@@ -19,5 +19,5 @@ class AppSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppInfo
-        fields = ["id", "name", "file_path", "type", "schema_path"]
-        read_only_fields = ["id", "name", "file_path", "type", "schema_path"]
+        fields = ["id", "name", "file_path", "application_type", "schema_path", "executable_name", "default_cli_args", "use_mpi"]
+        read_only_fields = ["id", "file_path", "schema_path"]

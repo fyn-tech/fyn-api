@@ -36,14 +36,13 @@ class AppInfo(models.Model):
         max_length=100,
         blank=False,
         null=False,
-        default="job",
         help_text="User provided name for the application"
     )
     file_path = models.CharField(
         max_length=500,
         help_text="Full path to the application file"
     )
-    type = models.CharField(
+    application_type = models.CharField(
         default=AppType.UNKNOWN,
         max_length=20,
         choices=AppType.choices,
@@ -55,6 +54,28 @@ class AppInfo(models.Model):
         null=True,
         help_text="Full path to the input schema file"
     ) 
+
+    # Application Definition
+    executable_name = models.CharField(
+        max_length=500,
+        blank=False, 
+        null=False,
+        help_text="FIX ME"
+    )
+
+    default_cli_args = models.CharField(
+        max_length=500,
+        blank=False, 
+        null=False,
+        help_text="FIX ME"
+    )
+
+    use_mpi = models.BooleanField(
+        default=False,
+        blank=False, 
+        null=False,
+        help_text="FIX ME"
+    )
     
     @property
     def content_type(self):
@@ -66,4 +87,4 @@ class AppInfo(models.Model):
             AppType.LINUX_BINARY: 'application/octet-stream',
             AppType.WINDOWS_BINARY: 'application/octet-stream',
         }
-        return content_type_map.get(self.type, 'application/octet-stream')
+        return content_type_map.get(self.application_type, 'application/octet-stream')

@@ -20,15 +20,17 @@ class AppRegAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
-        "type",
+        "application_type",
         "file_path",
         "schema_path",
+        "executable_name",
+        "default_cli_args",
+        "use_mpi"
     )
 
     readonly_fields = (
         "id",
-        "name",
     )
     
-    list_filter = ("type",)
-    search_fields = ("name",)
+    list_filter = ("application_type",)
+    search_fields = ("name", "executable_name")

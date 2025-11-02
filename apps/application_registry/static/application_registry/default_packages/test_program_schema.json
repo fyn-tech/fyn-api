@@ -16,6 +16,6 @@
     "sleep_time",
     "exit_code"
   ],
-  "title": "Config",
+  "title": "config",
   "type": "object"
 }

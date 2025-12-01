@@ -32,12 +32,14 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]  
 
     def create(self, validated_data):
-        # Hash password on creation
+        # Hash password on creation - password is required for creation
+        if 'password' not in validated_data:
+            raise serializers.ValidationError({"password": "This field is required for user creation."})
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        # Hash password on update if provided
-        if 'password' in validated_data:
-            validated_data['password'] = make_password(validated_data['password'])
+        # Remove password and username from updates - TODO: these should use separate endpoints
+        validated_data.pop('password', None)
+        validated_data.pop('username', None)
         return super().update(instance, validated_data)

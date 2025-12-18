@@ -12,13 +12,16 @@
 #  see <https://www.gnu.org/licenses/>.
 
 
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import PasswordUpdateSerializer, UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -28,14 +31,47 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-   
+
     def get_permissions(self):
-        """Handle new user, allow request to create new user. """
-        if self.action == 'create':  
+        """Handle new user, allow request to create new user."""
+        if self.action == "create":
             return [AllowAny()]
-        return [IsAuthenticated()] 
-    
+        return [IsAuthenticated()]
+
     @extend_schema(exclude=True)
     def list(self, request, *args, **kwargs):
-        """No returning of lists of users. """
-        raise MethodNotAllowed('GET')
+        """No returning of lists of users."""
+        raise MethodNotAllowed("GET")
+
+    @extend_schema(
+        request=PasswordUpdateSerializer,
+        responses={
+            200: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+            403: OpenApiTypes.OBJECT,
+        },
+        description="Update user password - requires old password verification",
+    )
+    @action(detail=True, methods=["post"], url_path="update-password")
+    def change_password(self, request, pk=None):
+        """Update user password - requires old password verification"""
+        user = self.get_object()
+
+        # Ensure user can only change their own password
+        if user != request.user:
+            return Response(
+                {"error": "You can only change your own password"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = PasswordUpdateSerializer(
+            data=request.data, context={"request": request}
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Password updated successfully"}, status=status.HTTP_200_OK
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

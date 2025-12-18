@@ -15,6 +15,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -29,17 +30,42 @@ class UserSerializer(serializers.ModelSerializer):
             "country",
             "company",
         ]
-        read_only_fields = ["id"]  
+        read_only_fields = ["id"]
 
     def create(self, validated_data):
         # Hash password on creation - password is required for creation
-        if 'password' not in validated_data:
-            raise serializers.ValidationError({"password": "This field is required for user creation."})
-        validated_data['password'] = make_password(validated_data['password'])
+        if "password" not in validated_data:
+            raise serializers.ValidationError(
+                {"password": "This field is required for user creation."}
+            )
+        validated_data["password"] = make_password(validated_data["password"])
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        # Remove password and username from updates - TODO: these should use separate endpoints
-        validated_data.pop('password', None)
-        validated_data.pop('username', None)
+        # Remove password and username from updates
+        validated_data.pop("password", None)
+        validated_data.pop("username", None)
         return super().update(instance, validated_data)
+
+
+class PasswordUpdateSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+
+    def validate_old_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect")
+        return value
+
+    def validate_new_password(self, value):
+        # Optional: Add password strength validation here
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters")
+        return value
+
+    def save(self):
+        user = self.context["request"].user
+        user.set_password(self.validated_data["new_password"])
+        user.save()
+        return user

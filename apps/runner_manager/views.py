@@ -13,8 +13,10 @@
 
 import secrets
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
     DjangoModelPermissionsOrAnonReadOnly,
@@ -23,7 +25,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 
 from .authentication import RunnerTokenAuthentication
-from .models import RunnerInfo
+from .models import RunnerInfo, RunnerStatus
 from .permissions import IsAuthenticatedRunner
 from .serializers import RunnerInfoFullSerializer, RunnerInfoSerializer
 
@@ -38,8 +40,7 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly]
 
     @extend_schema(
-        request=RunnerInfoSerializer,
-        responses={201: RunnerInfoFullSerializer}
+        request=RunnerInfoSerializer, responses={201: RunnerInfoFullSerializer}
     )
     def create(self, request, *args, **kwargs):
         """
@@ -47,10 +48,7 @@ class RunnerManagerUserViewSet(viewsets.ModelViewSet):
         """
         serializer = RunnerInfoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        runner = serializer.save(
-            owner=request.user,
-            token=secrets.token_urlsafe(32)
-        )
+        runner = serializer.save(owner=request.user, token=secrets.token_urlsafe(32))
         response_serializer = RunnerInfoFullSerializer(runner)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
@@ -110,3 +108,47 @@ class RunnerManagerRunnerViewSet(viewsets.ModelViewSet):
             },
             status=405,
         )
+
+    @extend_schema(
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "token": {"type": "string"},
+                },
+                "required": ["id", "token"],
+            }
+        },
+        responses={200: RunnerInfoFullSerializer},
+        description="Register runner with initial token and receive permanent token",
+    )
+    @action(
+        detail=False, methods=["post"], authentication_classes=[], permission_classes=[]
+    )
+    def register(self, request):
+        """Register a new runner with initial token."""
+        runner_id = request.data.get("id")
+        initial_token = request.data.get("token")
+
+        if not runner_id or not initial_token:
+            return Response(
+                {"error": "id and token required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            runner = RunnerInfo.objects.get(id=runner_id, token=initial_token)
+
+            # Rotate token and activate
+            runner.token = secrets.token_urlsafe(32)
+            runner.state = RunnerStatus.IDLE.value
+            runner.last_contact = timezone.now()
+            runner.save()
+
+            response_serializer = RunnerInfoFullSerializer(runner)
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+        except RunnerInfo.DoesNotExist:
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            )

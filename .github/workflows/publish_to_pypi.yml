@@ -1,16 +1,19 @@
-name: Build PyPI Client
+name: Publish API Client to PyPI
 
 on:
-    push:
-        # Trigger on any branch push for testing
-    pull_request:
+    workflow_run:
+        workflows: ["Generate SemVer Tag"]
+        types:
+            - completed
 
 permissions:
     contents: read
+    id-token: write  # Required for trusted publishing
 
 jobs:
     build-client:
         runs-on: ubuntu-latest
+        environment: pypi
 
         steps:
             - name: Checkout fyn-api repository
@@ -73,3 +76,8 @@ jobs:
               with:
                   name: fyn-api-client-distributions
                   path: fyn_api_client/dist/
+
+            - name: Publish to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                  packages-dir: fyn_api_client/dist/

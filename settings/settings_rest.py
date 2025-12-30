@@ -25,18 +25,18 @@ from datetime import timedelta
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+API_ENVIRONMENT = os.getenv("API_ENVIRONMENT")
 
-SERVER_CONFIG = [
-        {
-            "url": "https://api.fyn-tech.com", 
-            "description": "Production API"
-        } ,
-    ] if ENVIRONMENT == "production" else [
-        {
-            "url": "http://localhost:8000", 
-            "description": "Development API"
-        } ,
+
+SERVER_CONFIG = (
+    [
+        {"url": "https://api.fyn-tech.com", "description": "Production API"},
     ]
+    if ENVIRONMENT == "production" or API_ENVIRONMENT == "production"
+    else [
+        {"url": "http://localhost:8000", "description": "Development API"},
+    ]
+)
 
 # --------------------------------------------------------------------------------------------------
 #  Setting Construction
@@ -51,8 +51,8 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
 }
 
@@ -63,7 +63,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     "SERVERS": SERVER_CONFIG,
-    "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": False, 
+    "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": False,
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
     ],
@@ -88,24 +88,21 @@ SPECTACULAR_SETTINGS = {
 # JWT Settings
 # Note: SECRET_KEY will be set from main settings after import
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': True,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': os.getenv("SECRET_KEY"),  # Get directly from environment
-    'VERIFYING_KEY': None,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.getenv("SECRET_KEY"),  # Get directly from environment
+    "VERIFYING_KEY": None,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
 }
 
 # Export settings only.
-__all__ = ['REST_FRAMEWORK', 'SPECTACULAR_SETTINGS', 'SIMPLE_JWT']
+__all__ = ["REST_FRAMEWORK", "SPECTACULAR_SETTINGS", "SIMPLE_JWT"]

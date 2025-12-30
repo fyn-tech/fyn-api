@@ -54,8 +54,7 @@ jobs:
               run: |
                   python manage.py spectacular --file fyn_api_client.yaml
               env:
-                  DJANGO_SETTINGS_MODULE: settings.settings
-                  PRODUCTION: true
+                  ENVIRONMENT: production
 
             - name: Generate Python API client
               run: |

@@ -19,7 +19,7 @@ from .models import RunnerInfo
 class RunnerInfoFullSerializer(serializers.ModelSerializer):
     """
     Full runner info serializer including auth token.
-    
+
     Generally don't use this serializer - it contains the auth token,
     so we don't want to pass that around too much.
     """
@@ -35,7 +35,7 @@ class RunnerInfoFullSerializer(serializers.ModelSerializer):
             "created_at",
             "last_contact",
         ]
-        read_only_fields = ["id", "owner", "created_at", "token"]
+        read_only_fields = ["id", "owner", "token", "created_at", "last_contact"]
 
 
 class RunnerInfoSerializer(serializers.ModelSerializer):
@@ -49,4 +49,4 @@ class RunnerInfoSerializer(serializers.ModelSerializer):
             "created_at",
             "last_contact",
         ]
-        read_only_fields = ["id", "owner", "created_at"]
+        read_only_fields = ["id", "owner", "created_at", "last_contact"]
